@@ -109,14 +109,15 @@ public class GoodsFragment extends Fragment {
         arrayList = new ArrayList<>();
         setupRecyclerView();
 
-        mDatabase.child("goods").addValueEventListener(new ValueEventListener() {
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("goodsModel").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Get Post object and use the values to update the UI
 
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     GoodsModel categoryModel = postSnapshot.getValue(GoodsModel.class);
-                    //Toast.makeText(getContext(), categoryModel.getName(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), categoryModel.getName(), Toast.LENGTH_SHORT).show();
                     arrayList.add(categoryModel);
                     goodsRecyclerAdapter.notifyDataSetChanged();
                 }

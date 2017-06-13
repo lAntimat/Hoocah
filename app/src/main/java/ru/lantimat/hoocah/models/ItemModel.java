@@ -1,11 +1,13 @@
 package ru.lantimat.hoocah.models;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
 import java.util.ArrayList;
 
 /**
  * Created by Ильназ on 13.06.2017.
  */
-
+@IgnoreExtraProperties
 public class ItemModel {
 
     String name;
@@ -20,7 +22,8 @@ public class ItemModel {
         this.taste = taste;
     }
 
-
+    public ItemModel() {
+    }
 
     public String getName() {
         return name;
