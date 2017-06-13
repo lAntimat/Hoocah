@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "241361755047",
+    "firebase_url": "https://kaktus-12961.firebaseio.com",
+    "project_id": "kaktus-12961",
+    "storage_bucket": "kaktus-12961.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:241361755047:android:5d7641a97a083d08",
+        "android_client_info": {
+          "package_name": "ru.lantimat.hoocah"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "241361755047-acso1rd9kjusjdlfs50o4nj2sasplciv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDj49BHGyEiqhL8cOLP-4n1Sm_kLjQE4eI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
