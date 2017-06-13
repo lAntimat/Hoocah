@@ -2,31 +2,25 @@ package ru.lantimat.hoocah.models;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.util.ArrayList;
+
 /**
  * Created by Ильназ on 13.06.2017.
  */
 
 @IgnoreExtraProperties
 public class GoodsModel {
-    int id;
     String name;
     String imgUrl;
+    ArrayList<ItemModel> itemModels;
 
-    public GoodsModel(int id, String name, String ingUrl) {
-        this.id = id;
+    public GoodsModel(String name, String imgUrl, ArrayList<ItemModel> itemModels) {
         this.name = name;
-        this.imgUrl = ingUrl;
+        this.imgUrl = imgUrl;
+        this.itemModels = itemModels;
     }
 
     public GoodsModel() {
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {

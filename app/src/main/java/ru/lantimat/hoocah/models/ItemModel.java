@@ -6,27 +6,21 @@ import java.util.ArrayList;
  * Created by Ильназ on 13.06.2017.
  */
 
-public class HookahModel {
+public class ItemModel {
 
-    int id;
     String name;
-    double price;
+    String desription;
+    float price;
     ArrayList<String> taste;
 
-    public HookahModel(int id, String name, double price, ArrayList<String> taste) {
-        this.id = id;
+    public ItemModel( String name, String desription, float price, ArrayList<String> taste) {
         this.name = name;
+        this.desription = desription;
         this.price = price;
         this.taste = taste;
     }
 
-    public int getId() {
-        return id;
-    }
 
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -40,7 +34,7 @@ public class HookahModel {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(float price) {
         this.price = price;
     }
 
@@ -50,5 +44,13 @@ public class HookahModel {
 
     public void setTaste(ArrayList<String> taste) {
         this.taste = taste;
+    }
+
+    public String getDesription() {
+        return desription;
+    }
+
+    public void setDesription(String desription) {
+        this.desription = desription;
     }
 }

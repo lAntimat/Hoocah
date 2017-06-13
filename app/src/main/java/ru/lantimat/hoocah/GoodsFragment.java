@@ -84,16 +84,16 @@ public class GoodsFragment extends Fragment {
         }
 
         // Write a message to the database
-        mDatabase = FirebaseDatabase.getInstance().getReference("goods");
+        mDatabase = FirebaseDatabase.getInstance().getReference("goodsModel");
 
-        GoodsModel goods = new GoodsModel(1, "Кальяны", "https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg");
-        mDatabase.child("5").setValue(goods);
-        GoodsModel goods1 = new GoodsModel(2, "Еда", "https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg");
-        mDatabase.child("4").setValue(goods1);
-        GoodsModel goods2 = new GoodsModel(3, "Напитки", "https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg");
-        mDatabase.child("6").setValue(goods2);
-
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        /*ArrayList<ItemModel> arItems = new ArrayList<>();
+        arItems.add((new ItemModel("Адалия","Табак из Турции",300f, null)));
+        GoodsModel goodsModel = new GoodsModel("Кальяны", "https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg", arItems);
+        mDatabase.child("1").setValue(goodsModel);
+        GoodsModel goodsModel1 = new GoodsModel("Еда", "https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg",arItems);
+        mDatabase.child("2").setValue(goodsModel1);
+        GoodsModel goodsModel2 = new GoodsModel("Напитки", "https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg",arItems);
+        mDatabase.child("3").setValue(goodsModel2);*/
 
 
     }
@@ -115,9 +115,9 @@ public class GoodsFragment extends Fragment {
                 // Get Post object and use the values to update the UI
 
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    GoodsModel goodsModel = postSnapshot.getValue(GoodsModel.class);
-                    //Toast.makeText(getContext(), goodsModel.getName(), Toast.LENGTH_SHORT).show();
-                    arrayList.add(goodsModel);
+                    GoodsModel categoryModel = postSnapshot.getValue(GoodsModel.class);
+                    //Toast.makeText(getContext(), categoryModel.getName(), Toast.LENGTH_SHORT).show();
+                    arrayList.add(categoryModel);
                     goodsRecyclerAdapter.notifyDataSetChanged();
                 }
             }
