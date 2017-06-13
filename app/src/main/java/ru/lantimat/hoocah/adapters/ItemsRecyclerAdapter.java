@@ -17,21 +17,22 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import ru.lantimat.hoocah.R;
-import ru.lantimat.hoocah.models.GoodsModel;
+import ru.lantimat.hoocah.models.ItemModel;
 
 
-public class GoodsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ItemsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
     View.OnClickListener mClickListener;
 
-    private ArrayList<GoodsModel> mList;
+    private ArrayList<ItemModel> mList;
     int type;
     int typePosition;
 
-    public GoodsRecyclerAdapter(ArrayList<GoodsModel> itemList) {
+    public ItemsRecyclerAdapter(ArrayList<ItemModel> itemList) {
         this.mList = itemList;
     }
+
 
     public void setClickListener(View.OnClickListener callback) {
         mClickListener = callback;
@@ -40,20 +41,23 @@ public class GoodsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
-        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_goods, parent, false);
-        view.setOnClickListener(new View.OnClickListener() {
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_item, parent, false);
+                view.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View view) {mClickListener.onClick(view);
+                    public void onClick(View view) {
+                        mClickListener.onClick(view);
                     }
                 });
-        return new GoodsViewHolder(view);
+                return new ItemViewHolder(view);
     }
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         Context context;
-            ((GoodsViewHolder) holder).mTitle.setText(mList.get(position).getName());
-            context = ((GoodsViewHolder) holder).mImg.getContext();
-            Picasso.with(context).load(mList.get(position).getImgUrl()).into(((GoodsViewHolder) holder).mImg);
+        ((ItemViewHolder) holder).mTitle.setText(mList.get(position).getName());
+        ((ItemViewHolder) holder).mPrice.setText(String.valueOf(mList.get(position).getPrice()));
+        context = ((ItemViewHolder) holder).mImg.getContext();
+        Picasso.with(context).load( mList.get(position).getImgUrl()).into(((ItemViewHolder) holder).mImg);
+
     }
     @Override
     public int getItemCount() {
@@ -71,12 +75,15 @@ public class GoodsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
         return 0;
     }
-    public static class GoodsViewHolder extends RecyclerView.ViewHolder {
+
+    public static class ItemViewHolder extends RecyclerView.ViewHolder {
         private TextView mTitle;
+        private TextView mPrice;
         private ImageView mImg;
-        public GoodsViewHolder(View itemView) {
+        public ItemViewHolder(View itemView) {
             super(itemView);
-            mTitle = (TextView) itemView.findViewById(R.id.itemTextView);
+            mTitle = (TextView) itemView.findViewById(R.id.tvName);
+            mPrice = (TextView) itemView.findViewById(R.id.tvPrice);
             mImg = (ImageView) itemView.findViewById(R.id.imageView);
         }
     }

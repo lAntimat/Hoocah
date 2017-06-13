@@ -23,7 +23,9 @@ import java.util.ArrayList;
 
 import ru.lantimat.hoocah.Utils.ItemClickSupport;
 import ru.lantimat.hoocah.adapters.GoodsRecyclerAdapter;
+import ru.lantimat.hoocah.adapters.ItemsRecyclerAdapter;
 import ru.lantimat.hoocah.models.GoodsModel;
+import ru.lantimat.hoocah.models.ItemModel;
 
 import static android.content.ContentValues.TAG;
 
@@ -49,6 +51,7 @@ public class GoodsFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     GoodsRecyclerAdapter goodsRecyclerAdapter;
+    ItemsRecyclerAdapter itemsRecyclerAdapter;
     RecyclerView recyclerView;
     ArrayList<GoodsModel> arrayList;
 
@@ -86,14 +89,16 @@ public class GoodsFragment extends Fragment {
         // Write a message to the database
         mDatabase = FirebaseDatabase.getInstance().getReference("goodsModel");
 
-        /*ArrayList<ItemModel> arItems = new ArrayList<>();
-        arItems.add((new ItemModel("Адалия","Табак из Турции",300f, null)));
+        ArrayList<ItemModel> arItems = new ArrayList<>();
+        arItems.add((new ItemModel("Адалия","Табак из Турции","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,300f, null)));
+        arItems.add((new ItemModel("Альфакир","Табак из Турции","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,350f, null)));
+        arItems.add((new ItemModel("Нахла","Табак из Турции","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,400f, null)));
         GoodsModel goodsModel = new GoodsModel("Кальяны", "https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg", arItems);
         mDatabase.child("1").setValue(goodsModel);
-        GoodsModel goodsModel1 = new GoodsModel("Еда", "https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg",arItems);
+        GoodsModel goodsModel1 = new GoodsModel("Напитки", "http://icon-icons.com/icons2/588/PNG/512/bottle_wine_alcohol_drink_empty_icon-icons.com_55349.png",arItems);
         mDatabase.child("2").setValue(goodsModel1);
-        GoodsModel goodsModel2 = new GoodsModel("Напитки", "https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg",arItems);
-        mDatabase.child("3").setValue(goodsModel2);*/
+        GoodsModel goodsModel2 = new GoodsModel("Пицца", "https://thumbs.dreamstime.com/z/pizza-flat-design-sign-icon-long-shadow-vector-70753649.jpg",arItems);
+        mDatabase.child("3").setValue(goodsModel2);
 
 
     }
@@ -107,8 +112,15 @@ public class GoodsFragment extends Fragment {
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
 
         arrayList = new ArrayList<>();
-        setupRecyclerView();
+        setupGoodsRecyclerView();
 
+        firebaseInit();
+
+
+        return view;
+    }
+
+    private void firebaseInit() {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("goodsModel").addValueEventListener(new ValueEventListener() {
             @Override
@@ -117,7 +129,7 @@ public class GoodsFragment extends Fragment {
 
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     GoodsModel categoryModel = postSnapshot.getValue(GoodsModel.class);
-                    Toast.makeText(getContext(), categoryModel.getName(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getContext(), categoryModel.getName(), Toast.LENGTH_SHORT).show();
                     arrayList.add(categoryModel);
                     goodsRecyclerAdapter.notifyDataSetChanged();
                 }
@@ -130,9 +142,6 @@ public class GoodsFragment extends Fragment {
                 // ...
             }
         });
-
-
-        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -161,7 +170,7 @@ public class GoodsFragment extends Fragment {
 
 
 
-    private void setupRecyclerView() {
+    private void setupGoodsRecyclerView() {
         goodsRecyclerAdapter = new GoodsRecyclerAdapter(arrayList);
         //recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
@@ -173,9 +182,26 @@ public class GoodsFragment extends Fragment {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                 Toast.makeText(v.getContext(), "position = " + position, Toast.LENGTH_SHORT).show();
+
+                setupItemsRecyclerView(position);
             }
         });
 
+    }
+
+    private void setupItemsRecyclerView(int position) {
+        itemsRecyclerAdapter = new ItemsRecyclerAdapter(arrayList.get(position).getItemModels());
+        //recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(itemsRecyclerAdapter);
+
+        ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+            @Override
+            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                Toast.makeText(v.getContext(), "position = " + position, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**

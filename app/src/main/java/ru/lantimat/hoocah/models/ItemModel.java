@@ -12,12 +12,14 @@ public class ItemModel {
 
     String name;
     String desription;
+    String imgUrl;
     float price;
     ArrayList<String> taste;
 
-    public ItemModel( String name, String desription, float price, ArrayList<String> taste) {
+    public ItemModel( String name, String desription, String imgUrl, float price, ArrayList<String> taste) {
         this.name = name;
         this.desription = desription;
+        this.imgUrl = imgUrl;
         this.price = price;
         this.taste = taste;
     }
@@ -55,5 +57,13 @@ public class ItemModel {
 
     public void setDesription(String desription) {
         this.desription = desription;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 }

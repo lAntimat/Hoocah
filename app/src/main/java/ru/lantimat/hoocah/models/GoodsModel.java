@@ -38,4 +38,12 @@ public class GoodsModel {
     public void setImgUrl(String ingUrl) {
         this.imgUrl = ingUrl;
     }
+
+    public ArrayList<ItemModel> getItemModels() {
+        return itemModels;
+    }
+
+    public void setItemModels(ArrayList<ItemModel> itemModels) {
+        this.itemModels = itemModels;
+    }
 }
