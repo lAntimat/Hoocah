@@ -36,5 +36,6 @@
     <string name="forgot_password_msg">Нам нужен идентификатор вашей электронной почты, чтобы отправить вам инструкции по сбросу пароля.</string>
     <string name="fullName">ФИО</string>
     <string name="passport">Пасспортные данные</string>
+    <string name="title_activity_edit">EditActivity</string>
 
 </resources>

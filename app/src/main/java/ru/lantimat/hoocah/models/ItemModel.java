@@ -2,13 +2,14 @@ package ru.lantimat.hoocah.models;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by Ильназ on 13.06.2017.
  */
 @IgnoreExtraProperties
-public class ItemModel extends Item {
+public class ItemModel extends Item implements Serializable {
 
 
     String imgUrl;
