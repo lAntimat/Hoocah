@@ -87,7 +87,7 @@ public class GoodsFragment extends Fragment {
         }
 
         // Write a message to the database
-        mDatabase = FirebaseDatabase.getInstance().getReference("goodsModel");
+        /*mDatabase = FirebaseDatabase.getInstance().getReference("goodsModel");
 
         ArrayList<ItemModel> arItems = new ArrayList<>();
         arItems.add((new ItemModel("Адалия","Табак из Турции","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,300f, null)));
@@ -98,7 +98,7 @@ public class GoodsFragment extends Fragment {
         GoodsModel goodsModel1 = new GoodsModel("Напитки", "http://icon-icons.com/icons2/588/PNG/512/bottle_wine_alcohol_drink_empty_icon-icons.com_55349.png",arItems);
         mDatabase.child("2").setValue(goodsModel1);
         GoodsModel goodsModel2 = new GoodsModel("Пицца", "https://thumbs.dreamstime.com/z/pizza-flat-design-sign-icon-long-shadow-vector-70753649.jpg",arItems);
-        mDatabase.child("3").setValue(goodsModel2);
+        mDatabase.child("3").setValue(goodsModel2);*/
 
 
     }
