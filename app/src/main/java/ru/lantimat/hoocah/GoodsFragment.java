@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import ru.lantimat.hoocah.Utils.ItemClickSupport;
 import ru.lantimat.hoocah.adapters.GoodsRecyclerAdapter;
 import ru.lantimat.hoocah.adapters.ItemsRecyclerAdapter;
+import ru.lantimat.hoocah.adapters.TasteRecyclerAdapter;
 import ru.lantimat.hoocah.models.GoodsModel;
 import ru.lantimat.hoocah.models.ItemModel;
 
@@ -49,7 +51,10 @@ public class GoodsFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
-
+    int level = 0;
+    int goodsPosition = 0;
+    int itemsPosition = 0;
+    int tastePosition = 0;
     GoodsRecyclerAdapter goodsRecyclerAdapter;
     ItemsRecyclerAdapter itemsRecyclerAdapter;
     RecyclerView recyclerView;
@@ -87,18 +92,22 @@ public class GoodsFragment extends Fragment {
         }
 
         // Write a message to the database
-        /*mDatabase = FirebaseDatabase.getInstance().getReference("goodsModel");
+        mDatabase = FirebaseDatabase.getInstance().getReference("goodsModel");
 
         ArrayList<ItemModel> arItems = new ArrayList<>();
-        arItems.add((new ItemModel("Адалия","Табак из Турции","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,300f, null)));
-        arItems.add((new ItemModel("Альфакир","Табак из Турции","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,350f, null)));
-        arItems.add((new ItemModel("Нахла","Табак из Турции","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,400f, null)));
+        ArrayList<String> arTaste = new ArrayList<>();
+        for(int i = 0; i < 10; i++) {
+            arTaste.add("Вкус " + i);
+        }
+        arItems.add((new ItemModel("Адалия","Табак из Турции","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,300f, arTaste)));
+        arItems.add((new ItemModel("Альфакир","Табак из Турции","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,350f, arTaste)));
+        arItems.add((new ItemModel("Нахла","Табак из Турции","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,400f, arTaste)));
         GoodsModel goodsModel = new GoodsModel("Кальяны", "https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg", arItems);
         mDatabase.child("1").setValue(goodsModel);
         GoodsModel goodsModel1 = new GoodsModel("Напитки", "http://icon-icons.com/icons2/588/PNG/512/bottle_wine_alcohol_drink_empty_icon-icons.com_55349.png",arItems);
         mDatabase.child("2").setValue(goodsModel1);
         GoodsModel goodsModel2 = new GoodsModel("Пицца", "https://thumbs.dreamstime.com/z/pizza-flat-design-sign-icon-long-shadow-vector-70753649.jpg",arItems);
-        mDatabase.child("3").setValue(goodsModel2);*/
+        mDatabase.child("3").setValue(goodsModel2);
 
 
     }
@@ -170,7 +179,8 @@ public class GoodsFragment extends Fragment {
 
 
 
-    private void setupGoodsRecyclerView() {
+    private void setupGoodsRecyclerView() {  //Этот метод отображает нулевой уровень товаров
+        level = 0;
         goodsRecyclerAdapter = new GoodsRecyclerAdapter(arrayList);
         //recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
@@ -182,14 +192,15 @@ public class GoodsFragment extends Fragment {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                 Toast.makeText(v.getContext(), "position = " + position, Toast.LENGTH_SHORT).show();
-
+                goodsPosition = position;
                 setupItemsRecyclerView(position);
             }
         });
 
     }
 
-    private void setupItemsRecyclerView(int position) {
+    private void setupItemsRecyclerView(final int position) {   //Этот метод отображает первый уровень товаров
+        level = 1;
         itemsRecyclerAdapter = new ItemsRecyclerAdapter(arrayList.get(position).getItemModels());
         //recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
@@ -200,6 +211,27 @@ public class GoodsFragment extends Fragment {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                 Toast.makeText(v.getContext(), "position = " + position, Toast.LENGTH_SHORT).show();
+                itemsPosition = position;
+                if(arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getTaste()!=null) setupTasteRecyclerView(itemsPosition);
+
+
+            }
+        });
+    }
+
+    private void setupTasteRecyclerView(int position) {
+        level = 2;
+        TasteRecyclerAdapter tasteRecyclerAdapter = new TasteRecyclerAdapter(arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getTaste());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(tasteRecyclerAdapter);
+
+        ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+            @Override
+            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                tastePosition = position;
+                //mDatabase = FirebaseDatabase.getInstance().getReference("activeOrder");
+
             }
         });
     }
