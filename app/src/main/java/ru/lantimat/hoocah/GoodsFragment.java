@@ -278,7 +278,7 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
         //Toast.makeText(getContext(), "BackPressed", Toast.LENGTH_SHORT).show();
         switch (level) {
             case 0:
-                
+
                 break;
             case 1:
                 itemsPosition = -1;
