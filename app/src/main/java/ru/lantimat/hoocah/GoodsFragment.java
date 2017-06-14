@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +27,8 @@ import ru.lantimat.hoocah.Utils.ItemClickSupport;
 import ru.lantimat.hoocah.adapters.GoodsRecyclerAdapter;
 import ru.lantimat.hoocah.adapters.ItemsRecyclerAdapter;
 import ru.lantimat.hoocah.adapters.TasteRecyclerAdapter;
+import ru.lantimat.hoocah.models.ActiveItemModel;
+import ru.lantimat.hoocah.models.ActiveOrder;
 import ru.lantimat.hoocah.models.GoodsModel;
 import ru.lantimat.hoocah.models.ItemModel;
 
@@ -40,7 +43,7 @@ import static android.content.ContentValues.TAG;
  * Use the {@link GoodsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class GoodsFragment extends Fragment {
+public class GoodsFragment extends Fragment implements OnBackPressedListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -48,19 +51,25 @@ public class GoodsFragment extends Fragment {
 
     // TODO: Rename and change types of parameters
     private String mParam1;
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
     int level = 0;
-    int goodsPosition = 0;
-    int itemsPosition = 0;
-    int tastePosition = 0;
+    int goodsPosition = -1;
+    int itemsPosition = -1;
+    int tastePosition = -1;
+    float activeItemPrice = 0;
     GoodsRecyclerAdapter goodsRecyclerAdapter;
     ItemsRecyclerAdapter itemsRecyclerAdapter;
     RecyclerView recyclerView;
     ArrayList<GoodsModel> arrayList;
 
-    private DatabaseReference mDatabase;
+    ActiveOrder activeOrder; //Модель активного заказа
+    ArrayList<ActiveItemModel> activeItemModelArrayList = new ArrayList<>();
+
+    private DatabaseReference mDatabaseGoodsReference;
+    private DatabaseReference mDatabaseActiveItemReference;
+
+    long unixTime = System.currentTimeMillis() / 1000L; //Время открытия счета
     public GoodsFragment() {
         // Required empty public constructor
     }
@@ -70,15 +79,14 @@ public class GoodsFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment GoodsFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static GoodsFragment newInstance(String param1, String param2) {
+    public static GoodsFragment newInstance(String param1) {
         GoodsFragment fragment = new GoodsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        //args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -88,13 +96,14 @@ public class GoodsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
         // Write a message to the database
-        mDatabase = FirebaseDatabase.getInstance().getReference("goodsModel");
+        mDatabaseGoodsReference = FirebaseDatabase.getInstance().getReference("goodsModel");
+        mDatabaseActiveItemReference = FirebaseDatabase.getInstance().getReference("activeItem");
+        activeItemListener();
 
-        ArrayList<ItemModel> arItems = new ArrayList<>();
+
+        /*ArrayList<ItemModel> arItems = new ArrayList<>();
         ArrayList<String> arTaste = new ArrayList<>();
         for(int i = 0; i < 10; i++) {
             arTaste.add("Вкус " + i);
@@ -103,11 +112,11 @@ public class GoodsFragment extends Fragment {
         arItems.add((new ItemModel("Альфакир","Табак из Турции","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,350f, arTaste)));
         arItems.add((new ItemModel("Нахла","Табак из Турции","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,400f, arTaste)));
         GoodsModel goodsModel = new GoodsModel("Кальяны", "https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg", arItems);
-        mDatabase.child("1").setValue(goodsModel);
+        mDatabaseGoodsReference.child("1").setValue(goodsModel);
         GoodsModel goodsModel1 = new GoodsModel("Напитки", "http://icon-icons.com/icons2/588/PNG/512/bottle_wine_alcohol_drink_empty_icon-icons.com_55349.png",arItems);
-        mDatabase.child("2").setValue(goodsModel1);
+        mDatabaseGoodsReference.child("2").setValue(goodsModel1);
         GoodsModel goodsModel2 = new GoodsModel("Пицца", "https://thumbs.dreamstime.com/z/pizza-flat-design-sign-icon-long-shadow-vector-70753649.jpg",arItems);
-        mDatabase.child("3").setValue(goodsModel2);
+        mDatabaseGoodsReference.child("3").setValue(goodsModel2);*/
 
 
     }
@@ -130,8 +139,8 @@ public class GoodsFragment extends Fragment {
     }
 
     private void firebaseInit() {
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("goodsModel").addValueEventListener(new ValueEventListener() {
+        mDatabaseGoodsReference = FirebaseDatabase.getInstance().getReference();
+        mDatabaseGoodsReference.child("goodsModel").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Get Post object and use the values to update the UI
@@ -158,6 +167,7 @@ public class GoodsFragment extends Fragment {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
+
     }
 
     @Override
@@ -213,8 +223,7 @@ public class GoodsFragment extends Fragment {
                 Toast.makeText(v.getContext(), "position = " + position, Toast.LENGTH_SHORT).show();
                 itemsPosition = position;
                 if(arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getTaste()!=null) setupTasteRecyclerView(itemsPosition);
-
-
+                else addActiveItemToFireBase();
             }
         });
     }
@@ -230,10 +239,56 @@ public class GoodsFragment extends Fragment {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                 tastePosition = position;
-                //mDatabase = FirebaseDatabase.getInstance().getReference("activeOrder");
+                addActiveItemToFireBase();
 
             }
         });
+    }
+
+    private void addActiveItemToFireBase() {
+        String name = arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getName();
+        String description = arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getDesription();
+        String taste = null;
+        if(tastePosition!=-1) taste = arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getTaste().get(tastePosition);
+        float price = arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getPrice();
+        ActiveItemModel activeItemModel = new ActiveItemModel(name, description, taste, price, 1);
+        activeItemModelArrayList.add(activeItemModel);
+        activeItemPrice += activeItemModel.getPrice();
+        activeOrder = new ActiveOrder(mParam1, unixTime, true, activeItemPrice, activeItemModelArrayList);
+        mDatabaseActiveItemReference.child(mParam1).setValue(activeOrder);
+    }
+
+    private void activeItemListener() {
+        mDatabaseActiveItemReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ActiveOrder activeOrder = dataSnapshot.child(mParam1).getValue(ActiveOrder.class);
+                if(activeOrder!=null) activeItemPrice = activeOrder.getTotalPrice();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        //Toast.makeText(getContext(), "BackPressed", Toast.LENGTH_SHORT).show();
+        switch (level) {
+            case 0:
+                
+                break;
+            case 1:
+                itemsPosition = -1;
+                setupGoodsRecyclerView();
+                break;
+            case 2:
+                tastePosition =-1;
+                setupItemsRecyclerView(itemsPosition);
+                break;
+        }
     }
 
     /**

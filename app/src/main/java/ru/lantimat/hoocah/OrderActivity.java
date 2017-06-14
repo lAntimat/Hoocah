@@ -16,12 +16,30 @@ public class OrderActivity extends AppCompatActivity implements BillFragment.OnF
 
         Fragment fragment;
         Fragment fragment2;
-        fragment = new GoodsFragment();
+        fragment = new GoodsFragment().newInstance("1");
         fragment2 = new BillFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.gods_frame, fragment).commit();
         fragmentManager.beginTransaction().replace(R.id.bill_frame, fragment2).commit();
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        FragmentManager fm = getSupportFragmentManager();
+        OnBackPressedListener backPressedListener = null;
+        for (Fragment fragment: fm.getFragments()) {
+            if (fragment instanceof  OnBackPressedListener) {
+                backPressedListener = (OnBackPressedListener) fragment;
+                break;
+            }
+        }
+
+        if (backPressedListener != null) {
+            backPressedListener.onBackPressed();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
