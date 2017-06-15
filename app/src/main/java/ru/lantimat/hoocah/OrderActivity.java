@@ -1,23 +1,49 @@
 package ru.lantimat.hoocah;
 
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
 
-public class OrderActivity extends AppCompatActivity implements BillFragment.OnFragmentInteractionListener, GoodsFragment.OnFragmentInteractionListener {
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.iconics.context.IconicsLayoutInflater;
+
+public class OrderActivity extends AppCompatActivity implements GoodsFragment.OnFragmentInteractionListener {
+
+    final static String TAG = "OrderActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
+//        LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(new IconicsDrawable(this)
+                .icon(GoogleMaterial.Icon.gmd_close)
+                .color(Color.WHITE)
+                .sizeDp(16));
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        String id = getIntent().getStringExtra("id");
+        Log.d(TAG, "id " + id);
 
         Fragment fragment;
         Fragment fragment2;
-        fragment = new GoodsFragment().newInstance("1");
-        fragment2 = new BillFragment();
+        fragment = GoodsFragment.newInstance(id);
+        fragment2 = BillFragment.newInstance(id);
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.gods_frame, fragment).commit();
         fragmentManager.beginTransaction().replace(R.id.bill_frame, fragment2).commit();

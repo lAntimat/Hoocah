@@ -37,4 +37,8 @@ public class ActiveItemModel extends Item {
     public void setTaste(String taste) {
         this.taste = taste;
     }
+
+    public float getTotalPrice() {
+        return price*count;
+    }
 }

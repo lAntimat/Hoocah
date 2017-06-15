@@ -34,7 +34,37 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent1 = new Intent(getApplicationContext(), OrderActivity.class);
-                intent1.putExtra("id", 1);
+                intent1.putExtra("id", "1");
+                startActivity(intent1);
+            }
+        });
+
+        Button btn2 = (Button) findViewById(R.id.button2);
+        btn2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent1 = new Intent(getApplicationContext(), OrderActivity.class);
+                intent1.putExtra("id", "2");
+                startActivity(intent1);
+            }
+        });
+
+        Button btn3 = (Button) findViewById(R.id.button3);
+        btn3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent1 = new Intent(getApplicationContext(), OrderActivity.class);
+                intent1.putExtra("id", "3");
+                startActivity(intent1);
+            }
+        });
+        Button btn4 = (Button) findViewById(R.id.button4);
+
+        btn4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent1 = new Intent(getApplicationContext(), OrderActivity.class);
+                intent1.putExtra("id", "4");
                 startActivity(intent1);
             }
         });

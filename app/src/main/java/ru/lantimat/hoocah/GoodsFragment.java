@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -30,7 +29,6 @@ import ru.lantimat.hoocah.adapters.TasteRecyclerAdapter;
 import ru.lantimat.hoocah.models.ActiveItemModel;
 import ru.lantimat.hoocah.models.ActiveOrder;
 import ru.lantimat.hoocah.models.GoodsModel;
-import ru.lantimat.hoocah.models.ItemModel;
 
 import static android.content.ContentValues.TAG;
 
@@ -132,13 +130,13 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
         arrayList = new ArrayList<>();
         setupGoodsRecyclerView();
 
-        firebaseInit();
+        goodsListener();
 
 
         return view;
     }
 
-    private void firebaseInit() {
+    private void goodsListener() {
         mDatabaseGoodsReference = FirebaseDatabase.getInstance().getReference();
         mDatabaseGoodsReference.child("goodsModel").addValueEventListener(new ValueEventListener() {
             @Override
@@ -262,8 +260,14 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
         mDatabaseActiveItemReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                ActiveOrder activeOrder = dataSnapshot.child(mParam1).getValue(ActiveOrder.class);
-                if(activeOrder!=null) activeItemPrice = activeOrder.getTotalPrice();
+                if(dataSnapshot.child(mParam1).exists()) {
+                    ActiveOrder activeOrder = dataSnapshot.child(mParam1).getValue(ActiveOrder.class);
+                    if (activeOrder != null) {
+                        activeItemPrice = activeOrder.getTotalPrice();
+                        unixTime = activeOrder.getUnixTime();
+                        activeItemModelArrayList = activeOrder.getArActiveItemModel();
+                    }
+                }
             }
 
             @Override
