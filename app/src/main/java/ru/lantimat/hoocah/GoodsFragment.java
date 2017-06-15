@@ -29,6 +29,7 @@ import ru.lantimat.hoocah.adapters.TasteRecyclerAdapter;
 import ru.lantimat.hoocah.models.ActiveItemModel;
 import ru.lantimat.hoocah.models.ActiveOrder;
 import ru.lantimat.hoocah.models.GoodsModel;
+import ru.lantimat.hoocah.models.ItemModel;
 
 import static android.content.ContentValues.TAG;
 
@@ -101,20 +102,31 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
         activeItemListener();
 
 
-        /*ArrayList<ItemModel> arItems = new ArrayList<>();
+        ArrayList<ItemModel> arItems = new ArrayList<>();
         ArrayList<String> arTaste = new ArrayList<>();
         for(int i = 0; i < 10; i++) {
             arTaste.add("Вкус " + i);
         }
-        arItems.add((new ItemModel("Адалия","Табак из Турции","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,300f, arTaste)));
-        arItems.add((new ItemModel("Альфакир","Табак из Турции","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,350f, arTaste)));
-        arItems.add((new ItemModel("Нахла","Табак из Турции","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,400f, arTaste)));
+
+        arItems.add((new ItemModel(10001,"Адалия"," ","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,300f, arTaste)));
+        arItems.add((new ItemModel(10002,"Альфакир"," ","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,350f, arTaste)));
+        arItems.add((new ItemModel(10003,"Нахла"," ","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,400f, arTaste)));
         GoodsModel goodsModel = new GoodsModel("Кальяны", "https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg", arItems);
         mDatabaseGoodsReference.child("1").setValue(goodsModel);
+
+        arItems = new ArrayList<>();
+        arItems.add((new ItemModel(20001,"Чай малиновый"," ","http://rustovperm.ru/upload_modules/goods/dir/full/541de1ac61bbc422a301b4883096e78a.jpg" ,100f, null)));
+        arItems.add((new ItemModel(20002,"Чай черный"," ","http://rustovperm.ru/upload_modules/goods/dir/full/541de1ac61bbc422a301b4883096e78a.jpg" ,100f, null)));
+        arItems.add((new ItemModel(20003,"Coca-cola 0.5"," ","http://www.coca-cola.co.uk/content/dam/journey/gb/en/hidden/Products/lead-brand-image/Journey-brands-Product-Coca-Cola-Classic.jpg" ,50f, null)));
         GoodsModel goodsModel1 = new GoodsModel("Напитки", "http://icon-icons.com/icons2/588/PNG/512/bottle_wine_alcohol_drink_empty_icon-icons.com_55349.png",arItems);
         mDatabaseGoodsReference.child("2").setValue(goodsModel1);
+
+        arItems = new ArrayList<>();
+        arItems.add((new ItemModel(20001,"Пицца цезарь", "450 г \n Начинка (куриное филе жареное (филе грудки цыпленка","https://www.cafemumu.ru/upload/iblock/093/0937070a565ad7a051fa943e3ca3fc8a.png" ,210f, null)));
+        arItems.add((new ItemModel(20002,"Пицца Пепперони","500г","https://www.cafemumu.ru/upload/iblock/f0a/f0ac5dc84655ee7757ec5a3b0a50973e.png" ,250f, null)));
+        arItems.add((new ItemModel(20003,"Пицца Мясная","650г","https://www.cafemumu.ru/upload/iblock/049/0498a8e75c122e39bd1dd03782df603a.png" ,200f, null)));
         GoodsModel goodsModel2 = new GoodsModel("Пицца", "https://thumbs.dreamstime.com/z/pizza-flat-design-sign-icon-long-shadow-vector-70753649.jpg",arItems);
-        mDatabaseGoodsReference.child("3").setValue(goodsModel2);*/
+        mDatabaseGoodsReference.child("3").setValue(goodsModel2);
 
 
     }
@@ -244,12 +256,13 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
     }
 
     private void addActiveItemToFireBase() {
+        int id = arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getId();
         String name = arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getName();
         String description = arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getDesription();
         String taste = null;
         if(tastePosition!=-1) taste = arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getTaste().get(tastePosition);
         float price = arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getPrice();
-        ActiveItemModel activeItemModel = new ActiveItemModel(name, description, taste, price, 1);
+        ActiveItemModel activeItemModel = new ActiveItemModel(id, name, description, taste, price, 1);
         activeItemModelArrayList.add(activeItemModel);
         activeItemPrice += activeItemModel.getPrice();
         activeOrder = new ActiveOrder(mParam1, unixTime, true, activeItemPrice, activeItemModelArrayList);

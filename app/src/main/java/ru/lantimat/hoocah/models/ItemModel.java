@@ -15,7 +15,8 @@ public class ItemModel extends Item implements Serializable {
     String imgUrl;
     ArrayList<String> taste;
 
-    public ItemModel( String name, String desription, String imgUrl, float price, ArrayList<String> taste) {
+    public ItemModel(int id, String name, String desription, String imgUrl, float price, ArrayList<String> taste) {
+        this.id = id;
         this.name = name;
         this.desription = desription;
         this.imgUrl = imgUrl;

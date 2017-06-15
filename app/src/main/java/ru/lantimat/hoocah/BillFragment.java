@@ -20,6 +20,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import ru.lantimat.hoocah.Utils.ItemClickSupport;
 import ru.lantimat.hoocah.adapters.ActiveItemRecyclerAdapter;
 import ru.lantimat.hoocah.models.ActiveItemModel;
 import ru.lantimat.hoocah.models.ActiveOrder;
@@ -84,25 +85,38 @@ public class BillFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(activeItemRecyclerAdapter);
 
+        ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+            @Override
+            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                if(arActiveModel.size()==1) {
+                    mDatabaseActiveItemReference.child(mParam1).removeValue();
+                    arActiveModel.clear();
+                    activeItemRecyclerAdapter.notifyDataSetChanged();
+                }
+                else mDatabaseActiveItemReference.child(mParam1).child("arActiveItemModel").child(String.valueOf(position)).removeValue();
+            }
+        });
+
     }
 
     private void activeItemListener() {
         mDatabaseActiveItemReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                float totalPrice = 0;
                 if(dataSnapshot.child(mParam1).exists()) {
                     ActiveOrder activeOrder = dataSnapshot.child(mParam1).getValue(ActiveOrder.class);
-                    //arActiveModel = activeOrder.getArActiveItemModel();
                     if (activeOrder != null) {
                         arActiveModel.clear();
                         for (ActiveItemModel item: activeOrder.getArActiveItemModel()) {
                             arActiveModel.add(item);
-                            activeItemRecyclerAdapter.notifyDataSetChanged();
+                            totalPrice += item.getPrice();
                         }
                     }
+                } else totalPrice = 0;
+                tvTotalPrice.setText("Общая стоимость " + totalPrice);
 
-                    tvTotalPrice.setText("Общая стоимость " + String.valueOf(activeOrder.getTotalPrice()));
-                }
+                activeItemRecyclerAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -110,6 +124,7 @@ public class BillFragment extends Fragment {
 
             }
         });
+
     }
 
 
