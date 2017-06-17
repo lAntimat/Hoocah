@@ -39,4 +39,11 @@
     <string name="title_activity_edit">EditActivity</string>
     <string name="title_activity_test">TestActivity</string>
 
+    <string name="dialogs.open_orders"> </string>
+
+    <string-array name="dialog_open_orders_items">
+        <item>Оплатить</item>
+        <item>Изменить</item>
+    </string-array>
+
 </resources>

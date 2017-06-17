@@ -1,6 +1,7 @@
 package ru.lantimat.hoocah;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -103,8 +105,24 @@ public class OpenOrdersFragment extends Fragment {
 
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
-            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                //deleteItem(position);
+            public void onItemClicked(RecyclerView recyclerView, final int position, View v) {
+                new MaterialDialog.Builder(getContext())
+                        .items(R.array.dialog_open_orders_items)
+                        .itemsCallback(new MaterialDialog.ListCallback() {
+                            @Override
+                            public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                                switch (which) {
+                                    case 0:
+                                        break;
+                                    case 1:
+                                        Intent intent = new Intent(getContext(), OrderActivity.class);
+                                        intent.putExtra("id", arActiveOrder.get(position).getId());
+                                        startActivity(intent);
+                                        break;
+                                }
+                            }
+                        })
+                        .show();
             }
         });
 
@@ -136,6 +154,7 @@ public class OpenOrdersFragment extends Fragment {
 
     private void updateRecyclerView(DataSnapshot dataSnapshot) {
 
+        arActiveOrder.clear();
         for(DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
             activeOrder = postSnapshot.getValue(ActiveOrder.class);
             if(activeOrder.isActive()) arActiveOrder.add(activeOrder);
