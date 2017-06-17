@@ -22,7 +22,7 @@
         android:layout_below="@+id/toolbar">
 
         <FrameLayout
-            android:id="@+id/bill_frame"
+            android:id="@+id/open_order_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
@@ -44,7 +44,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:layout_weight="0.5"
-            app:layout_constraintBottom_toTopOf="@+id/bill_frame"
+            app:layout_constraintBottom_toTopOf="@+id/open_order_frame"
             app:layout_constraintRight_toRightOf="parent">
 
         </FrameLayout>

@@ -36,7 +36,7 @@ dependencies {
     compile 'com.google.firebase:firebase-auth:11.0.0'
     compile 'com.google.android.gms:play-services-gcm:11.0.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile "com.mikepenz:iconics-core:2.8.6@aar"
+    compile 'com.mikepenz:iconics-core:2.8.6@aar'
     compile 'com.mikepenz:google-material-typeface:3.0.1.0.original@aar'
     compile 'com.mikepenz:fontawesome-typeface:4.7.0.0@aar'
     testCompile 'junit:junit:4.12'

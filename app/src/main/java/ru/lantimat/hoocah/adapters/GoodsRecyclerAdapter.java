@@ -76,7 +76,7 @@ public class GoodsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         private ImageView mImg;
         public GoodsViewHolder(View itemView) {
             super(itemView);
-            mTitle = (TextView) itemView.findViewById(R.id.itemTextView);
+            mTitle = (TextView) itemView.findViewById(R.id.tvId);
             mImg = (ImageView) itemView.findViewById(R.id.imageView);
         }
     }

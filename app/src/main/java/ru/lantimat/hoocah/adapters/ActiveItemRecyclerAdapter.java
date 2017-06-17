@@ -48,9 +48,7 @@ public class ActiveItemRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
         ((ItemViewHolder) holder).mTitle.setText(mList.get(position).getName());
-        ((ItemViewHolder) holder).mCount.setText(String.valueOf(mList.get(position).getCount()));
-        ((ItemViewHolder) holder).mPrice.setText(String.valueOf(mList.get(position).getPrice()));
-        ((ItemViewHolder) holder).mTotalPrice.setText(String.valueOf(mList.get(position).getTotalPrice()));
+        ((ItemViewHolder) holder).mTotalPrice.setText(String.valueOf(mList.get(position).getPrice()));
 
     }
     @Override

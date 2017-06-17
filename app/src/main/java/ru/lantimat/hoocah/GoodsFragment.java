@@ -61,9 +61,10 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
     ItemsRecyclerAdapter itemsRecyclerAdapter;
     RecyclerView recyclerView;
     ArrayList<GoodsModel> arrayList;
+    String pushKey;
 
     ActiveOrder activeOrder; //Модель активного заказа
-    ArrayList<ActiveItemModel> activeItemModelArrayList = new ArrayList<>();
+    ArrayList<ActiveItemModel> arActiveItem = new ArrayList<>();
 
     private DatabaseReference mDatabaseGoodsReference;
     private DatabaseReference mDatabaseActiveItemReference;
@@ -99,8 +100,8 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
         // Write a message to the database
         mDatabaseGoodsReference = FirebaseDatabase.getInstance().getReference("goodsModel");
         mDatabaseActiveItemReference = FirebaseDatabase.getInstance().getReference("activeItem");
-        activeItemListener();
 
+        activeItemListener();
 
         ArrayList<ItemModel> arItems = new ArrayList<>();
         ArrayList<String> arTaste = new ArrayList<>();
@@ -112,14 +113,14 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
         arItems.add((new ItemModel(10002,"Альфакир"," ","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,350f, arTaste)));
         arItems.add((new ItemModel(10003,"Нахла"," ","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,400f, arTaste)));
         GoodsModel goodsModel = new GoodsModel("Кальяны", "https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg", arItems);
-        mDatabaseGoodsReference.child("1").setValue(goodsModel);
+        mDatabaseGoodsReference.child("0").setValue(goodsModel);
 
         arItems = new ArrayList<>();
         arItems.add((new ItemModel(20001,"Чай малиновый"," ","http://rustovperm.ru/upload_modules/goods/dir/full/541de1ac61bbc422a301b4883096e78a.jpg" ,100f, null)));
         arItems.add((new ItemModel(20002,"Чай черный"," ","http://rustovperm.ru/upload_modules/goods/dir/full/541de1ac61bbc422a301b4883096e78a.jpg" ,100f, null)));
         arItems.add((new ItemModel(20003,"Coca-cola 0.5"," ","http://www.coca-cola.co.uk/content/dam/journey/gb/en/hidden/Products/lead-brand-image/Journey-brands-Product-Coca-Cola-Classic.jpg" ,50f, null)));
         GoodsModel goodsModel1 = new GoodsModel("Напитки", "http://icon-icons.com/icons2/588/PNG/512/bottle_wine_alcohol_drink_empty_icon-icons.com_55349.png",arItems);
-        mDatabaseGoodsReference.child("2").setValue(goodsModel1);
+        mDatabaseGoodsReference.child("1").setValue(goodsModel1);
 
         arItems = new ArrayList<>();
         arItems.add((new ItemModel(20001,"Пицца цезарь", "450 г \n Начинка (куриное филе жареное (филе грудки цыпленка","https://www.cafemumu.ru/upload/iblock/093/0937070a565ad7a051fa943e3ca3fc8a.png" ,210f, null)));
@@ -262,11 +263,11 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
         String taste = null;
         if(tastePosition!=-1) taste = arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getTaste().get(tastePosition);
         float price = arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getPrice();
-        ActiveItemModel activeItemModel = new ActiveItemModel(id, name, description, taste, price, 1);
-        activeItemModelArrayList.add(activeItemModel);
+        ActiveItemModel activeItemModel = new ActiveItemModel(id, name, description, taste, price);
+        arActiveItem.add(activeItemModel);
         activeItemPrice += activeItemModel.getPrice();
-        activeOrder = new ActiveOrder(mParam1, unixTime, true, activeItemPrice, activeItemModelArrayList);
-        mDatabaseActiveItemReference.child(mParam1).setValue(activeOrder);
+        //activeOrder = new ActiveOrder(mParam1, unixTime, true, activeItemPrice, arActiveItem);
+        mDatabaseActiveItemReference.child(mParam1).child("arActiveItemModel").setValue(arActiveItem);
     }
 
     private void activeItemListener() {
@@ -276,9 +277,13 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
                 if(dataSnapshot.child(mParam1).exists()) {
                     ActiveOrder activeOrder = dataSnapshot.child(mParam1).getValue(ActiveOrder.class);
                     if (activeOrder != null) {
-                        activeItemPrice = activeOrder.getTotalPrice();
-                        unixTime = activeOrder.getUnixTime();
-                        activeItemModelArrayList = activeOrder.getArActiveItemModel();
+                        if(activeOrder.getId()==null) {
+                            activeOrder = new ActiveOrder(mParam1, unixTime, false, activeItemPrice, arActiveItem); //Заказ открыт
+                            mDatabaseActiveItemReference.child(mParam1).setValue(activeOrder);
+                        }
+                        if (activeOrder.getArActiveItemModel() != null)
+                            arActiveItem = activeOrder.getArActiveItemModel();
+                        else arActiveItem.clear();
                     }
                 }
             }
@@ -303,7 +308,7 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
                 break;
             case 2:
                 tastePosition =-1;
-                setupItemsRecyclerView(itemsPosition);
+                setupItemsRecyclerView(goodsPosition);
                 break;
         }
     }

@@ -4,7 +4,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -13,7 +12,6 @@ import android.view.View;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
-import com.mikepenz.iconics.context.IconicsLayoutInflater;
 
 public class OrderActivity extends AppCompatActivity implements GoodsFragment.OnFragmentInteractionListener {
 
@@ -46,7 +44,7 @@ public class OrderActivity extends AppCompatActivity implements GoodsFragment.On
         fragment2 = BillFragment.newInstance(id);
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.gods_frame, fragment).commit();
-        fragmentManager.beginTransaction().replace(R.id.bill_frame, fragment2).commit();
+        fragmentManager.beginTransaction().replace(R.id.open_order_frame, fragment2).commit();
 
     }
 
