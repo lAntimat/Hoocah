@@ -60,7 +60,7 @@ public class NumKeyboardFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_bill, container,false);
+        View view = inflater.inflate(R.layout.fragment_num_keyboard, container,false);
 
         return view;
     }

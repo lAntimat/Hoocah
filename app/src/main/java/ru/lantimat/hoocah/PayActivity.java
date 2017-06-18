@@ -15,7 +15,7 @@ public class PayActivity extends AppCompatActivity implements NumKeyboardFragmen
 
         Fragment fragment;
         //Fragment fragment2;
-        fragment = GoodsFragment.newInstance("");
+        fragment = NumKeyboardFragment.newInstance("");
         //fragment2 = BillFragment.newInstance(id);
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.keyboard_frame, fragment).commit();
