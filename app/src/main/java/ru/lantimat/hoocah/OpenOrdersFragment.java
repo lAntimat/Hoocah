@@ -5,9 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +23,6 @@ import java.util.ArrayList;
 
 import ru.lantimat.hoocah.Utils.Constants;
 import ru.lantimat.hoocah.Utils.ItemClickSupport;
-import ru.lantimat.hoocah.adapters.ActiveItemRecyclerAdapter;
 import ru.lantimat.hoocah.adapters.OpenOrderRecyclerAdapter;
 import ru.lantimat.hoocah.models.ActiveItemModel;
 import ru.lantimat.hoocah.models.ActiveOrder;
@@ -78,7 +75,7 @@ public class OpenOrdersFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_open_orders, container,false);
-        tvTotalPrice = (TextView) view.findViewById(R.id.textView);
+        tvTotalPrice = (TextView) view.findViewById(R.id.tvTable);
         btnCloseBill = (Button) view.findViewById(R.id.btnCloseBill);
 
         btnCloseClickListener();

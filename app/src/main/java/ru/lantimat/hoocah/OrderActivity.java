@@ -44,7 +44,7 @@ public class OrderActivity extends AppCompatActivity implements GoodsFragment.On
         fragment2 = BillFragment.newInstance(id);
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.gods_frame, fragment).commit();
-        fragmentManager.beginTransaction().replace(R.id.open_order_frame, fragment2).commit();
+        fragmentManager.beginTransaction().replace(R.id.keyboard_frame, fragment2).commit();
 
     }
 

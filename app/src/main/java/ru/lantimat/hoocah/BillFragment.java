@@ -1,13 +1,10 @@
 package ru.lantimat.hoocah;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,9 +23,6 @@ import ru.lantimat.hoocah.Utils.ItemClickSupport;
 import ru.lantimat.hoocah.adapters.ActiveItemRecyclerAdapter;
 import ru.lantimat.hoocah.models.ActiveItemModel;
 import ru.lantimat.hoocah.models.ActiveOrder;
-import ru.lantimat.hoocah.models.GoodsModel;
-
-import static android.content.ContentValues.TAG;
 
 
 public class BillFragment extends Fragment {
@@ -77,7 +71,7 @@ public class BillFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_bill, container,false);
-        tvTotalPrice = (TextView) view.findViewById(R.id.textView);
+        tvTotalPrice = (TextView) view.findViewById(R.id.tvTable);
         btnCloseBill = (Button) view.findViewById(R.id.btnCloseBill);
 
         btnCloseClickListener();
@@ -89,7 +83,7 @@ public class BillFragment extends Fragment {
         btnCloseBill.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addToActiveOrders();
+
             }
         });
 
