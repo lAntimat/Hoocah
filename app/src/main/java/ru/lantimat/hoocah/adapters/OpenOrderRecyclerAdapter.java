@@ -53,13 +53,15 @@ public class OpenOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
 
         ((ItemViewHolder) holder).mId.setText("Столик №" + mList.get(position).getId());
         String items = "";
-        for (int i = 0; i < mList.get(position).getArActiveItemModel().size(); i++)
-            items += mList.get(position).getArActiveItemModel().get(i).getName() + " " + "\n";
-        ((ItemViewHolder) holder).mItems.setText(items);
-        long unixBillOpenTime = mList.get(position).getUnixTime();
-        convertUnixTimeToDate(unixBillOpenTime);
-        ((ItemViewHolder) holder).mDate.setText(convertUnixTimeToDate(unixBillOpenTime));
-        ((ItemViewHolder) holder).mTotalPrice.setText(String.valueOf("Сумма к оплате: " + mList.get(position).getTotalPrice()));
+        if(mList!=null && mList.get(position).getArActiveItemModel()!=null) {
+            for (int i = 0; i < mList.get(position).getArActiveItemModel().size(); i++)
+                items += mList.get(position).getArActiveItemModel().get(i).getName() + " " + "\n";
+            ((ItemViewHolder) holder).mItems.setText(items);
+            long unixBillOpenTime = mList.get(position).getUnixTime();
+            convertUnixTimeToDate(unixBillOpenTime);
+            ((ItemViewHolder) holder).mDate.setText(convertUnixTimeToDate(unixBillOpenTime));
+            ((ItemViewHolder) holder).mTotalPrice.setText(String.valueOf("Сумма к оплате: " + mList.get(position).getTotalPrice()));
+        }
 
     }
 

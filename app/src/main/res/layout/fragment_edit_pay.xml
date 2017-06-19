@@ -86,13 +86,13 @@
         android:textSize="@dimen/sub_title" />
 
     <Button
-        android:id="@+id/button10"
+        android:id="@+id/btnCloseOrder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="20dp"
-        android:text="Оплатить"
+        android:layout_alignEnd="@+id/etCard"
         android:layout_alignParentBottom="true"
         android:layout_alignRight="@+id/etCard"
-        android:layout_alignEnd="@+id/etCard" />
+        android:padding="20dp"
+        android:text="Оплатить" />
 
 </RelativeLayout>

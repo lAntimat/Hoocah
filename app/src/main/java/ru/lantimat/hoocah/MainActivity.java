@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseDatabase.getInstance().setPersistenceEnabled(true); //Оффлайн режим
 
-        databaseReference = FirebaseDatabase.getInstance().getReference(Constants.TABLES);
+        databaseReference = FirebaseDatabase.getInstance().getReference();
 
 
         /*for(int i = 1; i < 11; i++) {
@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 arTables.clear();
-                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                for (DataSnapshot postSnapshot: dataSnapshot.child(Constants.TABLES).getChildren()) {
                     arTables.add(postSnapshot.getValue(TableModel.class));
                 }
                 tablesUpdate(arButtons, arTables);

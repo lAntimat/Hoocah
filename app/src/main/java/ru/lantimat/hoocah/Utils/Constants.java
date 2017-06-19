@@ -7,4 +7,5 @@ package ru.lantimat.hoocah.Utils;
 public class Constants {
     public static String ACTIVE_ITEM = "activeItem";
     public static String TABLES = "TABLES";
+    public static String CLOSE_ORDER = "CLOSE_ORDER";
 }

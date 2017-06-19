@@ -1,5 +1,6 @@
 package ru.lantimat.hoocah;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -119,7 +120,7 @@ public class BillFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.child(mParam1).exists()) {  //Если заказ для столика существует
                     activeOrder = dataSnapshot.child(mParam1).getValue(ActiveOrder.class);
-                }
+                } else activeOrder = null;
                 updateRecyclerView();
             }
 
@@ -166,7 +167,15 @@ public class BillFragment extends Fragment {
     private void payButton() {
         Intent intent = new Intent(getContext(), PayActivity.class);
         intent.putExtra("id", activeOrder.getId());
-        startActivity(intent);
+        startActivityForResult(intent, 1);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == Activity.RESULT_OK) {
+            getActivity().finish();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

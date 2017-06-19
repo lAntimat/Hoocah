@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -30,6 +31,8 @@ import java.lang.reflect.Method;
 
 import ru.lantimat.hoocah.Utils.Constants;
 import ru.lantimat.hoocah.models.ActiveOrder;
+import ru.lantimat.hoocah.models.CloseOrder;
+import ru.lantimat.hoocah.models.TableModel;
 
 
 public class EditPayFragment extends Fragment {
@@ -38,11 +41,14 @@ public class EditPayFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
 
     private String mParam1;
+    DatabaseReference mDatabaseReferenceActiveItem;
     DatabaseReference mDatabaseReference;
     TextView tvTotalPrice;
     float totalPrice;
     MaterialEditText editTextCash;
     MaterialEditText editTextCard;
+    Button btnCloseOrder;
+    ActiveOrder activeOrder;
 
     public static EditPayFragment newInstance(String param1) {
         EditPayFragment fragment = new EditPayFragment();
@@ -63,12 +69,20 @@ public class EditPayFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
         }
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference(Constants.ACTIVE_ITEM);
-        mDatabaseReference.addValueEventListener(new ValueEventListener() {
+        mDatabaseReferenceActiveItem = FirebaseDatabase.getInstance().getReference(Constants.ACTIVE_ITEM);
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        referenceListener();
+
+
+        super.onCreate(savedInstanceState);
+    }
+
+    private void referenceListener() {
+        mDatabaseReferenceActiveItem.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(mParam1!=null) {
-                    ActiveOrder activeOrder = dataSnapshot.child(mParam1).getValue(ActiveOrder.class);
+                    activeOrder = dataSnapshot.child(mParam1).getValue(ActiveOrder.class);
                     if (activeOrder != null) {
                         tvTotalPrice.setText(String.valueOf(activeOrder.getTotalPrice()));
                         totalPrice = activeOrder.getTotalPrice();
@@ -81,9 +95,6 @@ public class EditPayFragment extends Fragment {
 
             }
         });
-
-
-        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -94,7 +105,30 @@ public class EditPayFragment extends Fragment {
         editTextCash = (MaterialEditText) view.findViewById(R.id.etCash);
         editTextCard = (MaterialEditText) view.findViewById(R.id.etCard);
         tvTotalPrice = (TextView) view.findViewById(R.id.tvTotalPrice);
+        btnCloseOrder = (Button) view.findViewById(R.id.btnCloseOrder);
 
+        btnCloseOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(activeOrder!=null) {
+                    long unixTimeClose = System.currentTimeMillis() / 1000L; //Время закрытия счета
+                    mDatabaseReference.child(Constants.CLOSE_ORDER).push().
+                            setValue(new CloseOrder(activeOrder.getId(),activeOrder.getUnixTime(), unixTimeClose, activeOrder.getTotalPrice(), activeOrder.getArActiveItemModel()));
+                    mDatabaseReference.child(Constants.ACTIVE_ITEM).child(mParam1).removeValue();
+                    mDatabaseReference.child(Constants.TABLES).child(mParam1) //Ставим флаг, что стол свободен
+                            .setValue(new TableModel(Integer.parseInt(mParam1), Integer.parseInt(activeOrder.getId()), true));
+                    getActivity().setResult(Activity.RESULT_OK);
+                    getActivity().finish();
+                }
+            }
+        });
+
+        setupEditText();
+
+        return view;
+    }
+
+    private void setupEditText() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             editTextCash.setShowSoftInputOnFocus(false);
             editTextCard.setShowSoftInputOnFocus(false);
@@ -131,9 +165,15 @@ public class EditPayFragment extends Fragment {
                     float left;
                     left = pay - totalPrice;
                     editTextCash.setHelperTextColor(Color.BLACK);
-                    if(pay>0) editTextCash.setHelperTextAlwaysShown(true);
-                    else editTextCash.setHelperTextAlwaysShown(false);
-                    editTextCash.setHelperText("Сдача " + String.valueOf(left));
+                    if(pay>0) {
+                        editTextCash.setHelperTextAlwaysShown(true);
+                        editTextCash.setHelperText("Сдача " + String.valueOf(left));
+                    }
+                    else {
+                        editTextCash.setHelperTextAlwaysShown(false);
+                        editTextCash.setHelperText("");
+                    }
+
 
                 }
             }
@@ -147,8 +187,6 @@ public class EditPayFragment extends Fragment {
                 return true;
             }
         });
-
-        return view;
     }
 
     public void updateTextValue(CharSequence newText) {
