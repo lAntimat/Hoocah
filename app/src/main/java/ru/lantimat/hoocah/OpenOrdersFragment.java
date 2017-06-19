@@ -35,7 +35,6 @@ public class OpenOrdersFragment extends Fragment {
 
     private String mParam1;
 
-    TextView tvTotalPrice;
     RecyclerView recyclerView;
     OpenOrderRecyclerAdapter openOrderRecyclerAdapter;
     ArrayList<ActiveItemModel> arActiveModel = new ArrayList<>();
@@ -43,7 +42,6 @@ public class OpenOrdersFragment extends Fragment {
     ActiveOrder activeOrder; //Активный счет
     ArrayList<ActiveOrder> arActiveOrder = new ArrayList<>();
 
-    Button btnCloseBill;
 
     public static OpenOrdersFragment newInstance(String param1) {
         OpenOrdersFragment fragment = new OpenOrdersFragment();
@@ -75,29 +73,18 @@ public class OpenOrdersFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_open_orders, container,false);
-        tvTotalPrice = (TextView) view.findViewById(R.id.tvTable);
-        btnCloseBill = (Button) view.findViewById(R.id.btnCloseBill);
 
-        btnCloseClickListener();
         setupRecyclerView(view);
 
         return view;
     }
 
-    private void btnCloseClickListener() {
-        btnCloseBill.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-    }
 
     private void setupRecyclerView(View view) {
         //arActiveModel.add(new ActiveItemModel("Название", "", "", 300f, 1));
         openOrderRecyclerAdapter = new OpenOrderRecyclerAdapter(arActiveOrder);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),3));
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),1));
         recyclerView.setAdapter(openOrderRecyclerAdapter);
 
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
@@ -108,11 +95,15 @@ public class OpenOrdersFragment extends Fragment {
                         .itemsCallback(new MaterialDialog.ListCallback() {
                             @Override
                             public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                                Intent intent;
                                 switch (which) {
                                     case 0:
+                                        intent = new Intent(getContext(), PayActivity.class);
+                                        intent.putExtra("id", arActiveOrder.get(position).getId());
+                                        startActivity(intent);
                                         break;
                                     case 1:
-                                        Intent intent = new Intent(getContext(), OrderActivity.class);
+                                        intent = new Intent(getContext(), OrderActivity.class);
                                         intent.putExtra("id", arActiveOrder.get(position).getId());
                                         startActivity(intent);
                                         break;

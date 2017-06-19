@@ -1,6 +1,7 @@
 package ru.lantimat.hoocah;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,10 +20,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import ru.lantimat.hoocah.Utils.Constants;
 import ru.lantimat.hoocah.Utils.ItemClickSupport;
 import ru.lantimat.hoocah.adapters.ActiveItemRecyclerAdapter;
 import ru.lantimat.hoocah.models.ActiveItemModel;
 import ru.lantimat.hoocah.models.ActiveOrder;
+import ru.lantimat.hoocah.models.TableModel;
 
 
 public class BillFragment extends Fragment {
@@ -83,7 +86,7 @@ public class BillFragment extends Fragment {
         btnCloseBill.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                payButton();
             }
         });
 
@@ -145,15 +148,25 @@ public class BillFragment extends Fragment {
         activeItemRecyclerAdapter.notifyDataSetChanged();
     }
 
-    private void closeBill() {
+    public void deleteBill() {  //Удалить активный заказ
 
-        DatabaseReference closeBillReference = FirebaseDatabase.getInstance().getReference("closeBills");
-        long unixTime = System.currentTimeMillis() / 1000L;
-        closeBillReference.child(String.valueOf(unixTime)).setValue(activeOrder);
+        if(activeOrder!=null && activeOrder.getArActiveItemModel()==null) {
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+            reference.child(Constants.ACTIVE_ITEM).child(activeOrder.getId()).removeValue();
+            reference.child(Constants.TABLES).child(mParam1) //Ставим флаг, что стол свободен
+                    .setValue(new TableModel(Integer.parseInt(mParam1), Integer.parseInt(activeOrder.getId()), true, false, -1));
+
+        }
     }
 
     private void addToActiveOrders() {
         mDatabaseActiveItemReference.child(mParam1).child("active").setValue(true);
+    }
+
+    private void payButton() {
+        Intent intent = new Intent(getContext(), PayActivity.class);
+        intent.putExtra("id", activeOrder.getId());
+        startActivity(intent);
     }
 
     @Override

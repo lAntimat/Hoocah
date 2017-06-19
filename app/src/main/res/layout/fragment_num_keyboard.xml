@@ -20,28 +20,32 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/button13"
+                android:id="@+id/btn7"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="7" />
+                android:drawableRight="@drawable/divider"
+                android:text="7"
+                android:textSize="@dimen/keyboard_text_size" />
 
             <Button
-                android:id="@+id/button12"
+                android:id="@+id/btn8"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="8" />
+                android:text="8"
+                android:textSize="@dimen/keyboard_text_size" />
 
             <Button
-                android:id="@+id/button11"
+                android:id="@+id/btn9"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="9" />
+                android:text="9"
+                android:textSize="@dimen/keyboard_text_size" />
         </LinearLayout>
 
         <LinearLayout
@@ -51,28 +55,31 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/button16"
+                android:id="@+id/btn4"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="4" />
+                android:text="4"
+                android:textSize="@dimen/keyboard_text_size" />
 
             <Button
-                android:id="@+id/button15"
+                android:id="@+id/btn5"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="5" />
+                android:text="5"
+                android:textSize="@dimen/keyboard_text_size" />
 
             <Button
-                android:id="@+id/button14"
+                android:id="@+id/btn6"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="6" />
+                android:text="6"
+                android:textSize="@dimen/keyboard_text_size" />
         </LinearLayout>
 
         <LinearLayout
@@ -82,28 +89,31 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/button19"
+                android:id="@+id/btn1"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="1" />
+                android:text="1"
+                android:textSize="@dimen/keyboard_text_size" />
 
             <Button
-                android:id="@+id/button18"
+                android:id="@+id/btn2"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="2" />
+                android:text="2"
+                android:textSize="@dimen/keyboard_text_size" />
 
             <Button
-                android:id="@+id/button17"
+                android:id="@+id/btn3"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="3" />
+                android:text="3"
+                android:textSize="@dimen/keyboard_text_size" />
         </LinearLayout>
 
         <LinearLayout
@@ -113,28 +123,31 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/button22"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="." />
-
-            <Button
-                android:id="@+id/button21"
+                android:id="@+id/btnDot"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="0" />
+                android:text="."
+                android:textSize="@dimen/keyboard_text_size" />
 
             <Button
-                android:id="@+id/button20"
+                android:id="@+id/btn0"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Delete" />
+                android:text="0"
+                android:textSize="@dimen/keyboard_text_size" />
+
+            <Button
+                android:id="@+id/btnDel"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Del"
+                android:textSize="@dimen/keyboard_text_size" />
         </LinearLayout>
     </LinearLayout>
 

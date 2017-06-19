@@ -29,12 +29,7 @@ public class OrderActivity extends AppCompatActivity implements GoodsFragment.On
                 .icon(GoogleMaterial.Icon.gmd_close)
                 .color(Color.WHITE)
                 .sizeDp(16));
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+
         String id = getIntent().getStringExtra("id");
         Log.d(TAG, "id " + id);
 
@@ -45,6 +40,15 @@ public class OrderActivity extends AppCompatActivity implements GoodsFragment.On
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.gods_frame, fragment).commit();
         fragmentManager.beginTransaction().replace(R.id.keyboard_frame, fragment2).commit();
+
+        final BillFragment fgBill = (BillFragment) fragment2;
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fgBill.deleteBill();
+                finish();
+            }
+        });
 
     }
 

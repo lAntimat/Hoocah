@@ -22,6 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import ru.lantimat.hoocah.Utils.Constants;
 import ru.lantimat.hoocah.Utils.ItemClickSupport;
 import ru.lantimat.hoocah.adapters.GoodsRecyclerAdapter;
 import ru.lantimat.hoocah.adapters.ItemsRecyclerAdapter;
@@ -30,6 +31,7 @@ import ru.lantimat.hoocah.models.ActiveItemModel;
 import ru.lantimat.hoocah.models.ActiveOrder;
 import ru.lantimat.hoocah.models.GoodsModel;
 import ru.lantimat.hoocah.models.ItemModel;
+import ru.lantimat.hoocah.models.TableModel;
 
 import static android.content.ContentValues.TAG;
 
@@ -68,6 +70,7 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
 
     private DatabaseReference mDatabaseGoodsReference;
     private DatabaseReference mDatabaseActiveItemReference;
+    private DatabaseReference mDatabaseTablesReference;
 
     long unixTime = System.currentTimeMillis() / 1000L; //Время открытия счета
     public GoodsFragment() {
@@ -99,7 +102,8 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
         }
         // Write a message to the database
         mDatabaseGoodsReference = FirebaseDatabase.getInstance().getReference("goodsModel");
-        mDatabaseActiveItemReference = FirebaseDatabase.getInstance().getReference("activeItem");
+        mDatabaseActiveItemReference = FirebaseDatabase.getInstance().getReference(Constants.ACTIVE_ITEM);
+        mDatabaseTablesReference = FirebaseDatabase.getInstance().getReference(Constants.TABLES);
 
         activeItemListener();
 
@@ -268,6 +272,9 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
         activeItemPrice += activeItemModel.getPrice();
         //activeOrder = new ActiveOrder(mParam1, unixTime, true, activeItemPrice, arActiveItem);
         mDatabaseActiveItemReference.child(mParam1).child("arActiveItemModel").setValue(arActiveItem);
+        itemsPosition = -1;
+        tastePosition =-1;
+        setupGoodsRecyclerView();
     }
 
     private void activeItemListener() {
@@ -278,8 +285,9 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
                     ActiveOrder activeOrder = dataSnapshot.child(mParam1).getValue(ActiveOrder.class);
                     if (activeOrder != null) {
                         if(activeOrder.getId()==null) {
-                            activeOrder = new ActiveOrder(mParam1, unixTime, false, activeItemPrice, arActiveItem); //Заказ открыт
+                            activeOrder = new ActiveOrder(mParam1, unixTime, true, activeItemPrice, arActiveItem); //Заказ открыт
                             mDatabaseActiveItemReference.child(mParam1).setValue(activeOrder);
+                            mDatabaseTablesReference.child(mParam1).setValue(new TableModel(Integer.parseInt(mParam1), Integer.parseInt(activeOrder.getId()), false));
                         }
                         if (activeOrder.getArActiveItemModel() != null)
                             arActiveItem = activeOrder.getArActiveItemModel();
@@ -294,6 +302,7 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
             }
         });
     }
+
 
     @Override
     public void onBackPressed() {

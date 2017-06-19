@@ -33,6 +33,25 @@ public class NumKeyboardFragment extends Fragment {
 
     private String mParam1;
 
+    Button btn1;
+    Button btn2;
+    Button btn3;
+    Button btn4;
+    Button btn5;
+    Button btn6;
+    Button btn7;
+    Button btn8;
+    Button btn9;
+    Button btnDot;
+    Button btn0;
+    Button btnDel;
+
+    public ButtonClickListener listener;
+
+    interface ButtonClickListener {
+        public void onTextChange(CharSequence newText);
+    }
+
     public static NumKeyboardFragment newInstance(String param1) {
         NumKeyboardFragment fragment = new NumKeyboardFragment();
         Bundle args = new Bundle();
@@ -53,6 +72,8 @@ public class NumKeyboardFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
         }
 
+
+
         super.onCreate(savedInstanceState);
     }
 
@@ -61,8 +82,86 @@ public class NumKeyboardFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_num_keyboard, container,false);
+        btn1 = (Button) view.findViewById(R.id.btn1);
+        btn2 = (Button) view.findViewById(R.id.btn2);
+        btn3 = (Button) view.findViewById(R.id.btn3);
+        btn4 = (Button) view.findViewById(R.id.btn4);
+        btn5 = (Button) view.findViewById(R.id.btn5);
+        btn6 = (Button) view.findViewById(R.id.btn6);
+        btn7 = (Button) view.findViewById(R.id.btn7);
+        btn8 = (Button) view.findViewById(R.id.btn8);
+        btn9 = (Button) view.findViewById(R.id.btn9);
+        btnDot = (Button) view.findViewById(R.id.btnDot);
+        btn0 = (Button) view.findViewById(R.id.btn0);
+        btnDel = (Button) view.findViewById(R.id.btnDel);
+
+        // создание обработчика
+        View.OnClickListener oclBtn = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                    switch (v.getId()) {
+                        case R.id.btn0:
+                            listener.onTextChange("0");
+                            break;
+                        case R.id.btn1:
+                            listener.onTextChange("1");
+                            break;
+                        case R.id.btn2:
+                            listener.onTextChange("2");
+                            break;
+                        case R.id.btn3:
+                            listener.onTextChange("3");
+                            break;
+                        case R.id.btn4:
+                            listener.onTextChange("4");
+                            break;
+                        case R.id.btn5:
+                            listener.onTextChange("5");
+                            break;
+                        case R.id.btn6:
+                            listener.onTextChange("6");
+                            break;
+                        case R.id.btn7:
+                            listener.onTextChange("7");
+                            break;
+                        case R.id.btn8:
+                            listener.onTextChange("8");
+                            break;
+                        case R.id.btn9:
+                            listener.onTextChange("9");
+                            break;
+                        case R.id.btnDot:
+                            listener.onTextChange(".");
+                            break;
+                        case R.id.btnDel:
+                            listener.onTextChange("Del");
+                            break;
+
+                }
+
+            }
+        };
+
+        btn1.setOnClickListener(oclBtn);
+        btn2.setOnClickListener(oclBtn);
+        btn3.setOnClickListener(oclBtn);
+        btn4.setOnClickListener(oclBtn);
+        btn5.setOnClickListener(oclBtn);
+        btn6.setOnClickListener(oclBtn);
+        btn7.setOnClickListener(oclBtn);
+        btn8.setOnClickListener(oclBtn);
+        btn9.setOnClickListener(oclBtn);
+        btnDot.setOnClickListener(oclBtn);
+        btn0.setOnClickListener(oclBtn);
+        btnDel.setOnClickListener(oclBtn);
+
 
         return view;
+    }
+
+    public void setButtonClickListener(ButtonClickListener listener) {
+        this.listener = listener;
     }
 
     @Override

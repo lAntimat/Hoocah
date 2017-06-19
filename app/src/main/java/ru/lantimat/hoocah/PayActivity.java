@@ -8,18 +8,42 @@ import android.os.Bundle;
 
 public class PayActivity extends AppCompatActivity implements NumKeyboardFragment.OnFragmentInteractionListener {
 
+    NumKeyboardFragment fragmentA;
+    EditPayFragment fragmentB;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pay);
 
+
+        String id = null;
+        if(getIntent()!=null) {
+            id = getIntent().getStringExtra("id");
+        }
+
         Fragment fragment;
-        //Fragment fragment2;
+        Fragment fragment2;
         fragment = NumKeyboardFragment.newInstance("");
-        //fragment2 = BillFragment.newInstance(id);
+        fragment2 = EditPayFragment.newInstance(id);
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.keyboard_frame, fragment).commit();
-        //fragmentManager.beginTransaction().replace(R.id.keyboard_frame, fragment2).commit();
+        fragmentManager.beginTransaction().replace(R.id.pay_frame, fragment2).commit();
+
+
+
+        fragmentA = (NumKeyboardFragment) fragment;
+        fragmentB = (EditPayFragment) fragment2;
+
+
+       fragmentA.setButtonClickListener(new NumKeyboardFragment.ButtonClickListener() {
+           @Override
+           public void onTextChange(CharSequence newText) {
+               fragmentB.updateTextValue(newText);
+           }
+       });
+
+
 
     }
 
