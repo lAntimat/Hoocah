@@ -58,7 +58,7 @@
                     tools:layout_editor_absoluteY="124dp" />
 
                 <Button
-                    android:id="@+id/button9"
+                    android:id="@+id/btnComment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="@dimen/button_margin"
@@ -76,7 +76,7 @@
                     android:layout_weight="1"
                     android:background="@drawable/button_green"
                     android:text="Button10"
-                    app:layout_constraintLeft_toRightOf="@+id/button9"
+                    app:layout_constraintLeft_toRightOf="@+id/btnComment"
                     tools:layout_editor_absoluteY="124dp" />
             </LinearLayout>
 

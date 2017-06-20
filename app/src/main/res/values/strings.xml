@@ -38,12 +38,20 @@
     <string name="passport">Пасспортные данные</string>
     <string name="title_activity_edit">EditActivity</string>
     <string name="title_activity_test">TestActivity</string>
+    <string name="title_total_price">Общая стоиомсть </string>
+    <string name="title_tables_info">Столик №</string>
 
     <string name="dialogs.open_orders"> </string>
 
     <string-array name="dialog_open_orders_items">
         <item>Оплатить</item>
         <item>Изменить</item>
+        <item>Заказ активен</item>
+        <item>Ожидает оплаты</item>
+    </string-array>
+
+    <string-array name="dialog_goods_items">
+        <item>Описание</item>
     </string-array>
 
 </resources>

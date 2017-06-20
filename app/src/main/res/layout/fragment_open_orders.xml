@@ -11,7 +11,7 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/tvTable"
+        android:layout_above="@+id/tvTotalPrice"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         app:layout_constraintLeft_toLeftOf="parent"

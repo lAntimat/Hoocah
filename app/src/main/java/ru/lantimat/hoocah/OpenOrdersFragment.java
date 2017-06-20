@@ -107,6 +107,16 @@ public class OpenOrdersFragment extends Fragment {
                                         intent.putExtra("id", arActiveOrder.get(position).getId());
                                         startActivity(intent);
                                         break;
+                                    case 2:
+                                        //Ставим статус заказу - Активный
+                                        arActiveOrder.get(position).setActive(true);
+                                        mDatabaseActiveItemReference.child(arActiveOrder.get(position).getId()).setValue(activeOrder);
+                                        break;
+                                    case 3:
+                                        //Ставим статус заказу - ожидает оплаты
+                                        arActiveOrder.get(position).setActive(false);
+                                        mDatabaseActiveItemReference.child(arActiveOrder.get(position).getId()).setValue(activeOrder);
+                                        break;
                                 }
                             }
                         })
@@ -123,7 +133,7 @@ public class OpenOrdersFragment extends Fragment {
 
 
     private void activeItemListener() {
-        mDatabaseActiveItemReference = FirebaseDatabase.getInstance().getReference("activeItem");
+        mDatabaseActiveItemReference = FirebaseDatabase.getInstance().getReference(Constants.ACTIVE_ITEM);
         mDatabaseActiveItemReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -145,7 +155,7 @@ public class OpenOrdersFragment extends Fragment {
         arActiveOrder.clear();
         for(DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
             activeOrder = postSnapshot.getValue(ActiveOrder.class);
-            if(activeOrder.isActive()) arActiveOrder.add(activeOrder);
+            arActiveOrder.add(activeOrder);
         }
 
         openOrderRecyclerAdapter.notifyDataSetChanged();

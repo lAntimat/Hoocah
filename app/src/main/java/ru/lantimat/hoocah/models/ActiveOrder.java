@@ -11,6 +11,7 @@ import java.util.ArrayList;
 public class ActiveOrder {
 
     private String id;
+    private String comment;
     private long unixTime;
     private boolean active;
     private float totalPrice;
@@ -33,6 +34,14 @@ public class ActiveOrder {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public long getUnixTime() {

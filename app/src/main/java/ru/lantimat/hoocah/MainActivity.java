@@ -1,10 +1,7 @@
 package ru.lantimat.hoocah;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -39,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true); //Оффлайн режим
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
@@ -151,9 +147,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button btn9 = (Button) findViewById(R.id.button9);
+        Button btn9 = (Button) findViewById(R.id.btnComment);
 
-        btn4.setOnClickListener(new View.OnClickListener() {
+        btn9.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent1 = new Intent(getApplicationContext(), OrderActivity.class);
@@ -164,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button btn10 = (Button) findViewById(R.id.button10);
 
-        btn4.setOnClickListener(new View.OnClickListener() {
+        btn10.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent1 = new Intent(getApplicationContext(), OrderActivity.class);
@@ -233,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < arButtons.size(); i++) {
             Button button = arButtons.get(i);
             TableModel tableModel = arTables.get(i);
-            if (tableModel.isFree()) button.setBackgroundResource(R.drawable.button_green);
+            if (tableModel.isFree()) button.setBackgroundResource(R.drawable.button_click_green);
             else if(!tableModel.isFree()) button.setBackgroundResource(R.drawable.button_red);
             if (tableModel.isReservation()) button.setBackgroundResource(R.drawable.button_yellow);
         }

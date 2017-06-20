@@ -4,15 +4,20 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.StringDef;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -37,13 +42,15 @@ public class BillFragment extends Fragment {
     private String mParam1;
 
     TextView tvTotalPrice;
+    TextView tvInfo;
     RecyclerView recyclerView;
     ActiveItemRecyclerAdapter activeItemRecyclerAdapter;
     ArrayList<ActiveItemModel> arActiveModel = new ArrayList<>();
     private DatabaseReference mDatabaseActiveItemReference;
     ActiveOrder activeOrder; //Активный счет
-
+    Context context;
     Button btnCloseBill;
+    Button btnAddComment;
 
     public static BillFragment newInstance(String param1) {
         BillFragment fragment = new BillFragment();
@@ -64,6 +71,7 @@ public class BillFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
         }
+        context = getContext();
 
         mDatabaseActiveItemReference = FirebaseDatabase.getInstance().getReference("activeItem");
         activeItemListener();
@@ -75,10 +83,13 @@ public class BillFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_bill, container,false);
-        tvTotalPrice = (TextView) view.findViewById(R.id.tvTable);
-        btnCloseBill = (Button) view.findViewById(R.id.btnCloseBill);
+        tvTotalPrice = (TextView) view.findViewById(R.id.tvTotalPrice);
+        btnCloseBill = (Button) view.findViewById(R.id.btnPay);
+        btnAddComment= (Button) view.findViewById(R.id.btnComment);
+        tvInfo = (TextView) view.findViewById(R.id.tvInfo);
 
         btnCloseClickListener();
+        btnAddCommentListener();
         setupRecyclerView(view);
         return view;
     }
@@ -88,6 +99,31 @@ public class BillFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 payButton();
+            }
+        });
+
+    }
+    private void btnAddCommentListener() {
+        btnAddComment.setOnClickListener(new View.OnClickListener() {
+            String text = "";
+            @Override
+            public void onClick(View view) {
+                new MaterialDialog.Builder(context)
+                        .title("Введите коментарий")
+                        .inputType(InputType.TYPE_CLASS_TEXT)
+                        .positiveText("Добавить")
+                        .negativeText("Отмена")
+                        .input("", "", new MaterialDialog.InputCallback() {
+                            @Override
+                            public void onInput(MaterialDialog dialog, CharSequence input) {
+                                text = String.valueOf(input);
+                                if(!text.equals("")) {
+                                    activeOrder.setComment(text);
+                                    mDatabaseActiveItemReference.child(mParam1).setValue(activeOrder);
+                                }
+                            }})
+                        .show();
+
             }
         });
 
@@ -143,9 +179,12 @@ public class BillFragment extends Fragment {
                     }
                     mDatabaseActiveItemReference.child(mParam1).child("totalPrice").setValue(totalPrice);
                 }
-            } else totalPrice = 0;
-        tvTotalPrice.setText("Общая стоимость " + totalPrice);
+            } else {
+                totalPrice = 0;
+            }
 
+        tvTotalPrice.setText("Общая цена " + String.valueOf(totalPrice));
+        tvInfo.setText("Столик №" + mParam1);
         activeItemRecyclerAdapter.notifyDataSetChanged();
     }
 
@@ -153,7 +192,7 @@ public class BillFragment extends Fragment {
 
         if(activeOrder!=null && activeOrder.getArActiveItemModel()==null) {
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-            reference.child(Constants.ACTIVE_ITEM).child(activeOrder.getId()).removeValue();
+            reference.child(Constants.ACTIVE_ITEM).child(mParam1).removeValue();
             reference.child(Constants.TABLES).child(mParam1) //Ставим флаг, что стол свободен
                     .setValue(new TableModel(Integer.parseInt(mParam1), Integer.parseInt(activeOrder.getId()), true, false, -1));
 

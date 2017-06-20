@@ -1,6 +1,7 @@
 package ru.lantimat.hoocah;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,6 +32,7 @@ import ru.lantimat.hoocah.adapters.TasteRecyclerAdapter;
 import ru.lantimat.hoocah.models.ActiveItemModel;
 import ru.lantimat.hoocah.models.ActiveOrder;
 import ru.lantimat.hoocah.models.GoodsModel;
+import ru.lantimat.hoocah.models.Item;
 import ru.lantimat.hoocah.models.ItemModel;
 import ru.lantimat.hoocah.models.TableModel;
 
@@ -71,8 +74,10 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
     private DatabaseReference mDatabaseGoodsReference;
     private DatabaseReference mDatabaseActiveItemReference;
     private DatabaseReference mDatabaseTablesReference;
+    private DatabaseReference mDatabaseReference;
 
     long unixTime = System.currentTimeMillis() / 1000L; //Время открытия счета
+    long orderId = -1;
     public GoodsFragment() {
         // Required empty public constructor
     }
@@ -105,8 +110,6 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
         mDatabaseActiveItemReference = FirebaseDatabase.getInstance().getReference(Constants.ACTIVE_ITEM);
         mDatabaseTablesReference = FirebaseDatabase.getInstance().getReference(Constants.TABLES);
 
-        activeItemListener();
-
         ArrayList<ItemModel> arItems = new ArrayList<>();
         ArrayList<String> arTaste = new ArrayList<>();
         for(int i = 0; i < 10; i++) {
@@ -133,6 +136,9 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
         GoodsModel goodsModel2 = new GoodsModel("Пицца", "https://thumbs.dreamstime.com/z/pizza-flat-design-sign-icon-long-shadow-vector-70753649.jpg",arItems);
         mDatabaseGoodsReference.child("3").setValue(goodsModel2);
 
+        goodsListener();
+        activeItemListener();
+        closeOrdersListener();
 
     }
 
@@ -146,9 +152,6 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
 
         arrayList = new ArrayList<>();
         setupGoodsRecyclerView();
-
-        goodsListener();
-
 
         return view;
     }
@@ -176,6 +179,24 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
             }
         });
     }
+
+    private void closeOrdersListener() {
+        mDatabaseReference= FirebaseDatabase.getInstance().getReference(Constants.CLOSE_ORDER);
+        mDatabaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                orderId = dataSnapshot.getChildrenCount()+1;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                // ...
+            }
+        });
+    }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -227,10 +248,33 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
     private void setupItemsRecyclerView(final int position) {   //Этот метод отображает первый уровень товаров
         level = 1;
         itemsRecyclerAdapter = new ItemsRecyclerAdapter(arrayList.get(position).getItemModels());
+        itemsRecyclerAdapter.setButtonClickListener(new ItemsRecyclerAdapter.MyAdapterListener() {
+            @Override
+            public void btnDotsOnClick(View v, final int position1) {
+                new MaterialDialog.Builder(getContext())
+                        .items(R.array.dialog_goods_items)
+                        .itemsCallback(new MaterialDialog.ListCallback() {
+                            @Override
+                            public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                                switch (which) {
+                                    case 0:
+                                        new MaterialDialog.Builder(getContext())
+                                                .title("Описание")
+                                                .content(arrayList.get(goodsPosition).getItemModels().get(position1).getDesription())
+                                                .positiveText("Закрыть")
+                                                .show();
+                                        break;
+                                }
+                            }
+                        })
+                        .show();
+            }
+        });
         //recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(itemsRecyclerAdapter);
+
 
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override

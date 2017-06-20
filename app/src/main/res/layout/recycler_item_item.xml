@@ -11,80 +11,77 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
+        android:layout_height="206dp"
         android:foreground="?attr/selectableItemBackground">
         <!--android:background="@drawable/click_bg">-->
 
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="128dp"
-            android:layout_height="128dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="5dp"
-            android:foregroundGravity="right"
-            card_view:layout_constraintHorizontal_bias="0.0"
-            card_view:layout_constraintLeft_toLeftOf="parent"
-            card_view:layout_constraintRight_toRightOf="parent"
-            tools:layout_editor_absoluteY="152dp" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_below="@+id/imageView"
-            android:layout_alignLeft="@+id/imageView"
-            android:layout_alignStart="@+id/imageView"
-            android:layout_alignRight="@+id/imageView"
-            android:layout_alignEnd="@+id/imageView">
+            android:elevation="0dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:orientation="vertical">
+            <TextView
+                android:id="@+id/tvPrice"
+                style="@style/Base.TextAppearance.AppCompat.Body2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignTop="@+id/tvDots"
+                android:layout_toLeftOf="@+id/tvDots"
+                android:layout_toStartOf="@+id/tvDots"
+                android:gravity="right|center_vertical"
+                android:padding="@dimen/text_padding"
+                android:text="300"
+                card_view:layout_constraintHorizontal_bias="0.481"
+                card_view:layout_constraintLeft_toLeftOf="parent"
+                card_view:layout_constraintRight_toRightOf="parent"
+                card_view:layout_constraintTop_toBottomOf="@+id/imageView" />
 
-                <TextView
-                    android:id="@+id/tvName"
-                    style="@style/Base.TextAppearance.AppCompat.Body2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/imageView"
-                    android:layout_toLeftOf="@+id/tvPrice"
-                    android:layout_toStartOf="@+id/tvPrice"
-                    android:foregroundGravity="left"
-                    android:text="Адалия"
-                    card_view:layout_constraintHorizontal_bias="0.481"
-                    card_view:layout_constraintLeft_toLeftOf="parent"
-                    card_view:layout_constraintRight_toRightOf="parent"
-                    card_view:layout_constraintTop_toBottomOf="@+id/imageView" />
-            </LinearLayout>
+            <TextView
+                android:id="@+id/tvName"
+                style="@style/Base.TextAppearance.AppCompat.Body2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignTop="@+id/tvPrice"
+                android:layout_toLeftOf="@+id/tvPrice"
+                android:layout_toStartOf="@+id/tvPrice"
+                android:foregroundGravity="left"
+                android:gravity="center_vertical|center"
+                android:padding="@dimen/text_padding"
+                android:text="Адалия"
+                card_view:layout_constraintHorizontal_bias="0.481"
+                card_view:layout_constraintLeft_toLeftOf="parent"
+                card_view:layout_constraintRight_toRightOf="parent"
+                card_view:layout_constraintTop_toBottomOf="@+id/imageView" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:orientation="vertical">
+            <com.mikepenz.iconics.view.IconicsButton
+                android:id="@+id/tvDots"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="40dp"
+                android:layout_height="64dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:padding="@dimen/text_padding"
+                android:text="{gmd_more_vert}"
+                android:textSize="20sp" />
 
-                <TextView
-                    android:id="@+id/tvPrice"
-                    style="@style/Base.TextAppearance.AppCompat.Body2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBaseline="@+id/tvName"
-                    android:layout_alignBottom="@+id/tvName"
-                    android:layout_alignEnd="@+id/imageView"
-                    android:layout_alignRight="@+id/imageView"
-                    android:gravity="right"
-                    android:text="300"
-                    card_view:layout_constraintHorizontal_bias="0.481"
-                    card_view:layout_constraintLeft_toLeftOf="parent"
-                    card_view:layout_constraintRight_toRightOf="parent"
-                    card_view:layout_constraintTop_toBottomOf="@+id/imageView" />
-            </LinearLayout>
-        </LinearLayout>
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_above="@+id/tvPrice"
+                android:layout_centerHorizontal="true"
+                android:foregroundGravity="right"
+                card_view:layout_constraintHorizontal_bias="0.0"
+                card_view:layout_constraintLeft_toLeftOf="parent"
+                card_view:layout_constraintRight_toRightOf="parent"
+                tools:layout_editor_absoluteY="152dp" />
+        </RelativeLayout>
 
     </RelativeLayout>
 
