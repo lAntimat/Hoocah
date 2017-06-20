@@ -20,7 +20,7 @@ public class TestActivity extends AppCompatActivity {
 
         Fragment fragment;
 
-        fragment = OpenOrdersFragment.newInstance("");
+        fragment = CloseOrdersFragment.newInstance("");
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.keyboard_frame, fragment).commit();

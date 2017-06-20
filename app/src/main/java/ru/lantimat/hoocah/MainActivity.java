@@ -163,8 +163,8 @@ public class MainActivity extends AppCompatActivity {
         btn10.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent1 = new Intent(getApplicationContext(), OrderActivity.class);
-                intent1.putExtra("id", "10");
+                Intent intent1 = new Intent(getApplicationContext(), TestActivity.class);
+                //intent1.putExtra("id", "10");
                 startActivity(intent1);
             }
         });

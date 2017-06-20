@@ -11,13 +11,15 @@ import java.util.ArrayList;
 public class CloseOrder {
 
     private String tableId;
+    private String comment;
     private long unixTimeOpen;
     private long unixTimeClose;
     private float totalPrice;
     private ArrayList<ActiveItemModel> arActiveItemModel;
 
-    public CloseOrder(String tableId, long unixTimeOpen, long unixTimeClose, float totalPrice, ArrayList<ActiveItemModel> arActiveItemModel) {
+    public CloseOrder(String tableId, String comment, long unixTimeOpen, long unixTimeClose, float totalPrice, ArrayList<ActiveItemModel> arActiveItemModel) {
         this.tableId = tableId;
+        this.comment = comment;
         this.unixTimeOpen = unixTimeOpen;
         this.unixTimeClose = unixTimeClose;
         this.totalPrice = totalPrice;
@@ -27,12 +29,20 @@ public class CloseOrder {
     public CloseOrder() {
     }
 
-    public String getId() {
+    public String getTableId() {
         return tableId;
     }
 
-    public void setId(String tableId) {
+    public void setTableId(String tableId) {
         this.tableId = tableId;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public long getUnixTimeOpen() {

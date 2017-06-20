@@ -314,7 +314,7 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
         ActiveItemModel activeItemModel = new ActiveItemModel(id, name, description, taste, price);
         arActiveItem.add(activeItemModel);
         activeItemPrice += activeItemModel.getPrice();
-        //activeOrder = new ActiveOrder(mParam1, unixTime, true, activeItemPrice, arActiveItem);
+        //closeOrder = new ActiveOrder(mParam1, unixTime, true, activeItemPrice, arActiveItem);
         mDatabaseActiveItemReference.child(mParam1).child("arActiveItemModel").setValue(arActiveItem);
         itemsPosition = -1;
         tastePosition =-1;

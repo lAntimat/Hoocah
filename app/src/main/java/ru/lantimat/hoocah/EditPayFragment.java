@@ -108,9 +108,11 @@ public class EditPayFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(activeOrder!=null) {
+                    String comment = "";
+                    if(activeOrder.getComment()!=null) comment = activeOrder.getComment();
                     long unixTimeClose = System.currentTimeMillis() / 1000L; //Время закрытия счета
                     mDatabaseReference.child(Constants.CLOSE_ORDER).push().
-                            setValue(new CloseOrder(activeOrder.getId(),activeOrder.getUnixTime(), unixTimeClose, activeOrder.getTotalPrice(), activeOrder.getArActiveItemModel()));
+                            setValue(new CloseOrder(activeOrder.getId(), comment,activeOrder.getUnixTime(), unixTimeClose, activeOrder.getTotalPrice(), activeOrder.getArActiveItemModel()));
                     mDatabaseReference.child(Constants.ACTIVE_ITEM).child(mParam1).removeValue();
                     mDatabaseReference.child(Constants.TABLES).child(mParam1) //Ставим флаг, что стол свободен
                             .setValue(new TableModel(Integer.parseInt(mParam1), Integer.parseInt(activeOrder.getId()), true));
