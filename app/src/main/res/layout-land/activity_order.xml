@@ -18,7 +18,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_below="@+id/toolbar">
 
         <FrameLayout
@@ -35,7 +35,7 @@
         </FrameLayout>
 
         <FrameLayout
-            android:id="@+id/pay_frame"
+            android:id="@+id/gods_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"

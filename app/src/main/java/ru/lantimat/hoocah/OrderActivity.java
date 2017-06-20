@@ -13,7 +13,7 @@ import android.view.View;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 
-public class OrderActivity extends AppCompatActivity implements GoodsFragment.OnFragmentInteractionListener {
+public class OrderActivity extends AppCompatActivity {
 
     final static String TAG = "OrderActivity";
 
@@ -68,10 +68,5 @@ public class OrderActivity extends AppCompatActivity implements GoodsFragment.On
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
     }
 }

@@ -34,6 +34,7 @@ public class OpenOrdersFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
 
     private String mParam1;
+    int pos;
 
     RecyclerView recyclerView;
     OpenOrderRecyclerAdapter openOrderRecyclerAdapter;
@@ -89,7 +90,8 @@ public class OpenOrdersFragment extends Fragment {
 
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
-            public void onItemClicked(RecyclerView recyclerView, final int position, View v) {
+            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                pos = position;
                 new MaterialDialog.Builder(getContext())
                         .items(R.array.dialog_open_orders_items)
                         .itemsCallback(new MaterialDialog.ListCallback() {
@@ -99,23 +101,23 @@ public class OpenOrdersFragment extends Fragment {
                                 switch (which) {
                                     case 0:
                                         intent = new Intent(getContext(), PayActivity.class);
-                                        intent.putExtra("id", arActiveOrder.get(position).getId());
+                                        intent.putExtra("id", arActiveOrder.get(pos).getId());
                                         startActivity(intent);
                                         break;
                                     case 1:
                                         intent = new Intent(getContext(), OrderActivity.class);
-                                        intent.putExtra("id", arActiveOrder.get(position).getId());
+                                        intent.putExtra("id", arActiveOrder.get(pos).getId());
                                         startActivity(intent);
                                         break;
                                     case 2:
                                         //Ставим статус заказу - Активный
-                                        arActiveOrder.get(position).setActive(true);
-                                        mDatabaseActiveItemReference.child(arActiveOrder.get(position).getId()).setValue(activeOrder);
+                                        arActiveOrder.get(pos).setActive(true);
+                                        mDatabaseActiveItemReference.child(arActiveOrder.get(pos).getId()).setValue(arActiveOrder.get(pos));
                                         break;
                                     case 3:
                                         //Ставим статус заказу - ожидает оплаты
-                                        arActiveOrder.get(position).setActive(false);
-                                        mDatabaseActiveItemReference.child(arActiveOrder.get(position).getId()).setValue(activeOrder);
+                                        arActiveOrder.get(pos).setActive(false);
+                                        mDatabaseActiveItemReference.child(arActiveOrder.get(pos).getId()).setValue(arActiveOrder.get(pos));
                                         break;
                                 }
                             }

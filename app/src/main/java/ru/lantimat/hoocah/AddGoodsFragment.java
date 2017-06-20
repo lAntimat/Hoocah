@@ -1,18 +1,22 @@
 package ru.lantimat.hoocah;
 
 import android.content.Context;
-import android.content.Intent;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -33,15 +37,21 @@ import ru.lantimat.hoocah.adapters.TasteRecyclerAdapter;
 import ru.lantimat.hoocah.models.ActiveItemModel;
 import ru.lantimat.hoocah.models.ActiveOrder;
 import ru.lantimat.hoocah.models.GoodsModel;
-import ru.lantimat.hoocah.models.Item;
 import ru.lantimat.hoocah.models.ItemModel;
 import ru.lantimat.hoocah.models.TableModel;
 
 import static android.content.ContentValues.TAG;
 
 
-
-public class GoodsFragment extends Fragment implements OnBackPressedListener {
+/**
+ * A simple {@link Fragment} subclass.
+ * Activities that contain this fragment must implement the
+ * {@link AddGoodsFragment.OnFragmentInteractionListener} interface
+ * to handle interaction events.
+ * Use the {@link AddGoodsFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
+public class AddGoodsFragment extends Fragment implements OnBackPressedListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -50,10 +60,14 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
     // TODO: Rename and change types of parameters
     private String mParam1;
 
+    private OnFragmentInteractionListener mListener;
     int level = 0;
     int goodsPosition = -1;
     int itemsPosition = -1;
     int tastePosition = -1;
+
+    long goodsCount;
+    int itemsCount;
     float activeItemPrice = 0;
     GoodsRecyclerAdapter goodsRecyclerAdapter;
     ItemsRecyclerAdapter itemsRecyclerAdapter;
@@ -71,20 +85,13 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
 
     long unixTime = System.currentTimeMillis() / 1000L; //Время открытия счета
     long orderId = -1;
-    public GoodsFragment() {
+    public AddGoodsFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @return A new instance of fragment GoodsFragment.
-     */
     // TODO: Rename and change types and number of parameters
-    public static GoodsFragment newInstance(String param1) {
-        GoodsFragment fragment = new GoodsFragment();
+    public static AddGoodsFragment newInstance(String param1) {
+        AddGoodsFragment fragment = new AddGoodsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         //args.putString(ARG_PARAM2, param2);
@@ -109,7 +116,7 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
             arTaste.add("Вкус " + i);
         }
 
-        arItems.add((new ItemModel(10001,"Адалия"," ","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,300f, arTaste)));
+        /*arItems.add((new ItemModel(10001,"Адалия"," ","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,300f, arTaste)));
         arItems.add((new ItemModel(10002,"Альфакир"," ","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,350f, arTaste)));
         arItems.add((new ItemModel(10003,"Нахла"," ","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,400f, arTaste)));
         GoodsModel goodsModel = new GoodsModel("Кальяны", "https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg", arItems);
@@ -127,7 +134,7 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
         arItems.add((new ItemModel(20002,"Пицца Пепперони","500г","https://www.cafemumu.ru/upload/iblock/f0a/f0ac5dc84655ee7757ec5a3b0a50973e.png" ,250f, null)));
         arItems.add((new ItemModel(20003,"Пицца Мясная","650г","https://www.cafemumu.ru/upload/iblock/049/0498a8e75c122e39bd1dd03782df603a.png" ,200f, null)));
         GoodsModel goodsModel2 = new GoodsModel("Пицца", "https://thumbs.dreamstime.com/z/pizza-flat-design-sign-icon-long-shadow-vector-70753649.jpg",arItems);
-        mDatabaseGoodsReference.child("3").setValue(goodsModel2);
+        mDatabaseGoodsReference.child("3").setValue(goodsModel2);*/
 
         goodsListener();
         activeItemListener();
@@ -140,8 +147,17 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        View view = inflater.inflate(R.layout.fragment_goods, container, false);
+        View view = inflater.inflate(R.layout.fragment_add_goods, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showChangeLangDialog();
+            }
+        });
 
         arrayList = new ArrayList<>();
         setupGoodsRecyclerView();
@@ -149,14 +165,41 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
         return view;
     }
 
+    public void showChangeLangDialog() {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = this.getActivity().getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.dialog_add_goods, null);
+        dialogBuilder.setView(dialogView);
+
+        final EditText edt1 = (EditText) dialogView.findViewById(R.id.edit1);
+        final EditText edt2 = (EditText) dialogView.findViewById(R.id.edit2);
+
+        dialogBuilder.setTitle("Custom dialog");
+        dialogBuilder.setMessage("Enter text below");
+        dialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                GoodsModel goodsModel = new GoodsModel(edt1.getText().toString(), edt2.getText().toString(), null);
+                mDatabaseGoodsReference.child(Constants.GOODS_MODEL).child(String.valueOf(goodsCount)).setValue(goodsModel);
+            }
+        });
+        dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //pass
+            }
+        });
+        AlertDialog b = dialogBuilder.create();
+        b.show();
+    }
+
     private void goodsListener() {
         mDatabaseGoodsReference = FirebaseDatabase.getInstance().getReference();
-        mDatabaseGoodsReference.child("goodsModel").addValueEventListener(new ValueEventListener() {
+        mDatabaseGoodsReference.child(Constants.GOODS_MODEL).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Get Post object and use the values to update the UI
-
+                arrayList.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    goodsCount = dataSnapshot.getChildrenCount();
                     GoodsModel categoryModel = postSnapshot.getValue(GoodsModel.class);
                     //Toast.makeText(getContext(), categoryModel.getName(), Toast.LENGTH_SHORT).show();
                     arrayList.add(categoryModel);
@@ -189,7 +232,6 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
             }
         });
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -306,18 +348,8 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
         mDatabaseActiveItemReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.child(mParam1).exists()) {
-                    ActiveOrder activeOrder = dataSnapshot.child(mParam1).getValue(ActiveOrder.class);
-                    if (activeOrder != null) {
-                        if(activeOrder.getId()==null) {
-                            activeOrder = new ActiveOrder(mParam1, unixTime, true, activeItemPrice, arActiveItem); //Заказ открыт
-                            mDatabaseActiveItemReference.child(mParam1).setValue(activeOrder);
-                            mDatabaseTablesReference.child(mParam1).setValue(new TableModel(Integer.parseInt(mParam1), Integer.parseInt(activeOrder.getId()), false));
-                        }
-                        if (activeOrder.getArActiveItemModel() != null)
-                            arActiveItem = activeOrder.getArActiveItemModel();
-                        else arActiveItem.clear();
-                    }
+                if (dataSnapshot.child(mParam1).exists()) {
+
                 }
             }
 
@@ -347,4 +379,18 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
         }
     }
 
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onFragmentInteraction(Uri uri);
+    }
 }

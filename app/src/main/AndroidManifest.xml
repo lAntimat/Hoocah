@@ -33,6 +33,18 @@
         <activity android:name=".PayActivity"
             android:windowSoftInputMode="stateHidden"
             />
+        <activity
+            android:name=".auth.LoginActivity"
+            android:label="@string/title_activity_login"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".auth.SignupActivity"
+            android:label="@string/title_activity_login"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".auth.ResetPasswordActivity"
+            android:label="@string/title_activity_login"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

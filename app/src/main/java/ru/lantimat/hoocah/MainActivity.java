@@ -22,6 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 import ru.lantimat.hoocah.Utils.Constants;
+import ru.lantimat.hoocah.auth.LoginActivity;
 import ru.lantimat.hoocah.models.TableModel;
 
 public class MainActivity extends AppCompatActivity {
@@ -152,8 +153,8 @@ public class MainActivity extends AppCompatActivity {
         btn9.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent1 = new Intent(getApplicationContext(), OrderActivity.class);
-                intent1.putExtra("id", "9");
+                Intent intent1 = new Intent(getApplicationContext(), EditActivity.class);
+                //intent1.putExtra("id", "9");
                 startActivity(intent1);
             }
         });

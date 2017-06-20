@@ -18,6 +18,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 import ru.lantimat.hoocah.Utils.Constants;
 import ru.lantimat.hoocah.Utils.ItemClickSupport;
@@ -142,6 +144,7 @@ public class CloseOrdersFragment extends Fragment {
             arCloseOrder.add(closeOrder);
         }
 
+        Collections.reverse(arCloseOrder);
         closeOrderRecyclerAdapter.notifyDataSetChanged();
     }
 
