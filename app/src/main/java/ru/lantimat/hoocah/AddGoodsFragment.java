@@ -340,7 +340,6 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
                 Toast.makeText(v.getContext(), "position = " + position, Toast.LENGTH_SHORT).show();
                 itemsPosition = position;
                 if(arGoods.get(goodsPosition).getItemModels().get(itemsPosition).getTaste()!=null) setupTasteRecyclerView(itemsPosition);
-                else addActiveItemToFireBase();
             }
         });
     }
@@ -356,7 +355,6 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                 tastePosition = position;
-                addActiveItemToFireBase();
 
             }
         });

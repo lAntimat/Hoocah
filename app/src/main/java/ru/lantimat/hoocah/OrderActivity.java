@@ -12,6 +12,7 @@ import android.view.View;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.materialize.color.Material;
 
 public class OrderActivity extends AppCompatActivity {
 
@@ -26,9 +27,10 @@ public class OrderActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(new IconicsDrawable(this)
-                .icon(GoogleMaterial.Icon.gmd_close)
+                .icon(GoogleMaterial.Icon.gmd_arrow_back)
                 .color(Color.WHITE)
                 .sizeDp(16));
+        toolbar.setTitleTextColor(Material.White._1000.getAsColor());
 
         String id = getIntent().getStringExtra("id");
         Log.d(TAG, "id " + id);
