@@ -24,9 +24,11 @@ public class TabletOrPhone {
         if (diagonalInches>=6.5){
             // 6.5inch device or bigger
             isTablet=true;
+            isPhone = false;
         }else{
             // smaller device
             isPhone=true;
+            isTablet=false;
         }
     }
 

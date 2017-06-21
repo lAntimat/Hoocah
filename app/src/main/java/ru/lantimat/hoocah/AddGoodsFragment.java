@@ -11,7 +11,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +37,6 @@ import ru.lantimat.hoocah.models.ActiveItemModel;
 import ru.lantimat.hoocah.models.ActiveOrder;
 import ru.lantimat.hoocah.models.GoodsModel;
 import ru.lantimat.hoocah.models.ItemModel;
-import ru.lantimat.hoocah.models.TableModel;
 
 import static android.content.ContentValues.TAG;
 
@@ -72,7 +70,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
     GoodsRecyclerAdapter goodsRecyclerAdapter;
     ItemsRecyclerAdapter itemsRecyclerAdapter;
     RecyclerView recyclerView;
-    ArrayList<GoodsModel> arrayList;
+    ArrayList<GoodsModel> arGoods;
     String pushKey;
 
     ActiveOrder activeOrder; //Модель активного заказа
@@ -85,6 +83,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
 
     long unixTime = System.currentTimeMillis() / 1000L; //Время открытия счета
     long orderId = -1;
+
     public AddGoodsFragment() {
         // Required empty public constructor
     }
@@ -155,17 +154,18 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showChangeLangDialog();
+              if(goodsPosition==-1) showAddGoodsDialog();
+                else if(goodsPosition!=-1) showAddItemsDialog();
             }
         });
 
-        arrayList = new ArrayList<>();
+        arGoods = new ArrayList<>();
         setupGoodsRecyclerView();
 
         return view;
     }
 
-    public void showChangeLangDialog() {
+    public void showAddGoodsDialog() {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
         LayoutInflater inflater = this.getActivity().getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.dialog_add_goods, null);
@@ -190,6 +190,41 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
         AlertDialog b = dialogBuilder.create();
         b.show();
     }
+    public void showAddItemsDialog() {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = this.getActivity().getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.dialog_add_items, null);
+        dialogBuilder.setView(dialogView);
+
+        final EditText edt1 = (EditText) dialogView.findViewById(R.id.edit1);
+        final EditText edt2 = (EditText) dialogView.findViewById(R.id.edit2);
+        final EditText edt3 = (EditText) dialogView.findViewById(R.id.edit3);
+        final EditText edt4 = (EditText) dialogView.findViewById(R.id.edit4);
+        final EditText edt5 = (EditText) dialogView.findViewById(R.id.edit5);
+
+        dialogBuilder.setTitle("Custom dialog");
+        dialogBuilder.setMessage("Enter text below");
+        dialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                GoodsModel goodsModel = arGoods.get(goodsPosition);
+                ItemModel itemModel = new ItemModel(Integer.parseInt(edt1.getText().toString()), edt2.getText().toString(),edt3.getText().toString(), edt4.getText().toString(), Float.parseFloat(edt5.getText().toString()), null);
+                ArrayList<ItemModel> arItems = new ArrayList<>();
+                if(goodsModel.getItemModels()!=null) {
+                    arItems = goodsModel.getItemModels();
+                    arItems.add(itemModel);
+                } else arItems.add(itemModel);
+                goodsModel.setItemModels(arItems);
+                mDatabaseGoodsReference.child(Constants.GOODS_MODEL).child(String.valueOf(goodsPosition)).setValue(goodsModel);
+            }
+        });
+        dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //pass
+            }
+        });
+        AlertDialog b = dialogBuilder.create();
+        b.show();
+    }
 
     private void goodsListener() {
         mDatabaseGoodsReference = FirebaseDatabase.getInstance().getReference();
@@ -197,12 +232,12 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Get Post object and use the values to update the UI
-                arrayList.clear();
+                arGoods.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     goodsCount = dataSnapshot.getChildrenCount();
                     GoodsModel categoryModel = postSnapshot.getValue(GoodsModel.class);
                     //Toast.makeText(getContext(), categoryModel.getName(), Toast.LENGTH_SHORT).show();
-                    arrayList.add(categoryModel);
+                    arGoods.add(categoryModel);
                     goodsRecyclerAdapter.notifyDataSetChanged();
                 }
             }
@@ -247,7 +282,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
 
     private void setupGoodsRecyclerView() {  //Этот метод отображает нулевой уровень товаров
         level = 0;
-        goodsRecyclerAdapter = new GoodsRecyclerAdapter(arrayList);
+        goodsRecyclerAdapter = new GoodsRecyclerAdapter(arGoods);
         //recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -267,7 +302,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
 
     private void setupItemsRecyclerView(final int position) {   //Этот метод отображает первый уровень товаров
         level = 1;
-        itemsRecyclerAdapter = new ItemsRecyclerAdapter(arrayList.get(position).getItemModels());
+        itemsRecyclerAdapter = new ItemsRecyclerAdapter(arGoods.get(position).getItemModels());
         itemsRecyclerAdapter.setButtonClickListener(new ItemsRecyclerAdapter.MyAdapterListener() {
             @Override
             public void btnDotsOnClick(View v, final int position1) {
@@ -280,7 +315,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
                                     case 0:
                                         new MaterialDialog.Builder(getContext())
                                                 .title("Описание")
-                                                .content(arrayList.get(goodsPosition).getItemModels().get(position1).getDesription())
+                                                .content(arGoods.get(goodsPosition).getItemModels().get(position1).getDesription())
                                                 .positiveText("Закрыть")
                                                 .show();
                                         break;
@@ -291,9 +326,9 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
             }
         });
         //recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        TabletOrPhone tabletOrPhone = new TabletOrPhone(getActivity());
+        TabletOrPhone tabletOrPhone = new TabletOrPhone(getActivity()); //Узнаем телефон это или планшет
         if(tabletOrPhone.isPhone()) recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),1));
-        else if(tabletOrPhone.isPhone()) recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
+        else if(tabletOrPhone.isTablet()) recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
 
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(itemsRecyclerAdapter);
@@ -304,7 +339,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                 Toast.makeText(v.getContext(), "position = " + position, Toast.LENGTH_SHORT).show();
                 itemsPosition = position;
-                if(arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getTaste()!=null) setupTasteRecyclerView(itemsPosition);
+                if(arGoods.get(goodsPosition).getItemModels().get(itemsPosition).getTaste()!=null) setupTasteRecyclerView(itemsPosition);
                 else addActiveItemToFireBase();
             }
         });
@@ -312,7 +347,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
 
     private void setupTasteRecyclerView(int position) {
         level = 2;
-        TasteRecyclerAdapter tasteRecyclerAdapter = new TasteRecyclerAdapter(arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getTaste());
+        TasteRecyclerAdapter tasteRecyclerAdapter = new TasteRecyclerAdapter(arGoods.get(goodsPosition).getItemModels().get(itemsPosition).getTaste());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(tasteRecyclerAdapter);
@@ -328,12 +363,12 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
     }
 
     private void addActiveItemToFireBase() {
-        int id = arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getId();
-        String name = arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getName();
-        String description = arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getDesription();
+        int id = arGoods.get(goodsPosition).getItemModels().get(itemsPosition).getId();
+        String name = arGoods.get(goodsPosition).getItemModels().get(itemsPosition).getName();
+        String description = arGoods.get(goodsPosition).getItemModels().get(itemsPosition).getDesription();
         String taste = null;
-        if(tastePosition!=-1) taste = arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getTaste().get(tastePosition);
-        float price = arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getPrice();
+        if(tastePosition!=-1) taste = arGoods.get(goodsPosition).getItemModels().get(itemsPosition).getTaste().get(tastePosition);
+        float price = arGoods.get(goodsPosition).getItemModels().get(itemsPosition).getPrice();
         ActiveItemModel activeItemModel = new ActiveItemModel(id, name, description, taste, price);
         arActiveItem.add(activeItemModel);
         activeItemPrice += activeItemModel.getPrice();
@@ -366,7 +401,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
         //Toast.makeText(getContext(), "BackPressed", Toast.LENGTH_SHORT).show();
         switch (level) {
             case 0:
-
+                getActivity().finish();
                 break;
             case 1:
                 itemsPosition = -1;

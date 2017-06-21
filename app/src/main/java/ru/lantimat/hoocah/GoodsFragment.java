@@ -103,6 +103,8 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
         mDatabaseActiveItemReference = FirebaseDatabase.getInstance().getReference(Constants.ACTIVE_ITEM);
         mDatabaseTablesReference = FirebaseDatabase.getInstance().getReference(Constants.TABLES);
 
+
+
         ArrayList<ItemModel> arItems = new ArrayList<>();
         ArrayList<String> arTaste = new ArrayList<>();
         for(int i = 0; i < 10; i++) {
@@ -249,9 +251,9 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
             }
         });
         //recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        TabletOrPhone tabletOrPhone = new TabletOrPhone(getActivity());
+        TabletOrPhone tabletOrPhone = new TabletOrPhone(getActivity()); //Узнаем телефон это или планшет
         if(tabletOrPhone.isPhone()) recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),1));
-        else if(tabletOrPhone.isPhone()) recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
+        else if(tabletOrPhone.isTablet()) recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
 
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(itemsRecyclerAdapter);

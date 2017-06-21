@@ -32,4 +32,22 @@ public class EditActivity extends AppCompatActivity {
 
 
     }
+
+    @Override
+    public void onBackPressed() {
+        FragmentManager fm = getSupportFragmentManager();
+        OnBackPressedListener backPressedListener = null;
+        for (Fragment fragment: fm.getFragments()) {
+            if (fragment instanceof  OnBackPressedListener) {
+                backPressedListener = (OnBackPressedListener) fragment;
+                break;
+            }
+        }
+
+        if (backPressedListener != null) {
+            backPressedListener.onBackPressed();
+        } else {
+            super.onBackPressed();
+        }
+    }
 }
