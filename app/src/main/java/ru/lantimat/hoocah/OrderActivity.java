@@ -1,7 +1,6 @@
 package ru.lantimat.hoocah;
 
 import android.graphics.Color;
-import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -41,7 +40,7 @@ public class OrderActivity extends AppCompatActivity {
         fragment2 = BillFragment.newInstance(id);
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.gods_frame, fragment).commit();
-        fragmentManager.beginTransaction().replace(R.id.keyboard_frame, fragment2).commit();
+        fragmentManager.beginTransaction().replace(R.id.close_order_frame, fragment2).commit();
 
         final BillFragment fgBill = (BillFragment) fragment2;
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {

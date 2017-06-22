@@ -20,8 +20,14 @@
     <string name="title_activity_update">Настрйоки аккаунта</string>
     <string name="hint_email">Email</string>
     <string name="hint_password">Пароль</string>
-    <string name="hint_name">ФИО</string>
+    <string name="hint_name">Свое имя назови, юный падаван</string>
     <string name="hint_img_url">Ссылка на фото</string>
+    <string name="hint_good_name">Название категории</string>
+    <string name="hint_item_name">Название товара</string>
+    <string name="hint_item_img">Url картинки</string>
+    <string name="hint_item_id">Код товара</string>
+    <string name="hint_item_description">Описание товара</string>
+    <string name="hint_item_price">Цена</string>
     <string name="btn_login">Войти</string>
     <string name="btn_link_to_register">Еще нет аккаунта? Зарегистрируйтесь сейчас!</string>
     <string name="btn_link_to_login">У меня уже есть аккаунт. Войти</string>
@@ -36,7 +42,7 @@
     <string name="btn_sign_out">Выйти</string>
     <string name="lbl_forgot_password">Забыли пароль??</string>
     <string name="forgot_password_msg">Нам нужен идентификатор вашей электронной почты, чтобы отправить вам инструкции по сбросу пароля.</string>
-    <string name="fullName">ФИО</string>
+    <string name="fullName">Свое имя назови, юный падаван</string>
     <string name="passport">Пасспортные данные</string>
     <string name="title_activity_edit">EditActivity</string>
     <string name="title_activity_test">TestActivity</string>

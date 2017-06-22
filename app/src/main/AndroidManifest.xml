@@ -3,14 +3,14 @@
     package="ru.lantimat.hoocah">
 
     <application
+        android:name=".FireBaseApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:screenOrientation="landscape"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name="ru.lantimat.hoocah.FireBaseApp">
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -30,9 +30,9 @@
             android:name=".TestActivity"
             android:label="@string/title_activity_test"
             android:theme="@style/AppTheme" />
-        <activity android:name=".PayActivity"
-            android:windowSoftInputMode="stateHidden"
-            />
+        <activity
+            android:name=".PayActivity"
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".auth.LoginActivity"
             android:label="@string/title_activity_login"
@@ -49,6 +49,7 @@
             android:name=".UpdateProfileActivity"
             android:label="@string/title_activity_update"
             android:theme="@style/AppTheme" />
+        <activity android:name=".CloseOrderActivity"></activity>
     </application>
 
 </manifest>

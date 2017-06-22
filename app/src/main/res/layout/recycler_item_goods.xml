@@ -12,37 +12,52 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:foreground="?attr/selectableItemBackground">
-        <!--android:background="@drawable/click_bg">-->
+        android:elevation="0dp">
 
-
-        <ImageView
+        <ru.lantimat.hoocah.Utils.SquareImageView
             android:id="@+id/imageView"
-            android:layout_width="128dp"
-            android:layout_height="128dp"
-            android:layout_alignParentTop="true"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_margin="5dp"
+            android:scaleType="centerCrop"
+            android:scrollbarAlwaysDrawHorizontalTrack="false"
+            android:src="@drawable/cactus"
+            android:drawSelectorOnTop="true"
             card_view:layout_constraintHorizontal_bias="0.0"
             card_view:layout_constraintLeft_toLeftOf="parent"
             card_view:layout_constraintRight_toRightOf="parent"
             tools:layout_editor_absoluteY="152dp" />
 
-        <TextView
-            android:id="@+id/tvId"
-            style="@style/Base.TextAppearance.AppCompat.Body2"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/imageView"
-            android:layout_centerHorizontal="true"
-            android:gravity="center"
-            android:padding="@dimen/text_padding"
-            android:text="12345678"
-            card_view:layout_constraintHorizontal_bias="0.481"
-            card_view:layout_constraintLeft_toLeftOf="parent"
-            card_view:layout_constraintRight_toRightOf="parent"
-            card_view:layout_constraintTop_toBottomOf="@+id/imageView" />
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:background="#55000000">
+
+            <TextView
+                android:id="@+id/tvName"
+                style="@style/Base.TextAppearance.AppCompat.Body2"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:foregroundGravity="left"
+                android:gravity="center_vertical"
+                android:maxLines="2"
+                android:paddingBottom="@dimen/text_padding"
+                android:paddingLeft="@dimen/text_padding"
+                android:paddingTop="@dimen/text_padding"
+                android:text="Адалия"
+                android:textColor="@android:color/white"
+                card_view:layout_constraintHorizontal_bias="0.481"
+                card_view:layout_constraintLeft_toLeftOf="parent"
+                card_view:layout_constraintRight_toRightOf="parent"
+                card_view:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+        </LinearLayout>
 
     </RelativeLayout>
 

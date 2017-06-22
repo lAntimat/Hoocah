@@ -20,10 +20,10 @@ public class TestActivity extends AppCompatActivity {
 
         Fragment fragment;
 
-        fragment = CloseOrdersFragment.newInstance("");
+        fragment = StatisticFragment.newInstance("");
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.keyboard_frame, fragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.close_order_frame, fragment).commit();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

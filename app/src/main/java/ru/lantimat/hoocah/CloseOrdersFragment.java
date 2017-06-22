@@ -90,27 +90,7 @@ public class CloseOrdersFragment extends Fragment {
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, final int position, View v) {
-                new MaterialDialog.Builder(getContext())
-                        .items(R.array.dialog_open_orders_items)
-                        .itemsCallback(new MaterialDialog.ListCallback() {
-                            @Override
-                            public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                                Intent intent;
-                                switch (which) {
-                                    case 0:
-                                        intent = new Intent(getContext(), PayActivity.class);
-                                        intent.putExtra("id", arCloseOrder.get(position).getTableId());
-                                        startActivity(intent);
-                                        break;
-                                    case 1:
-                                        intent = new Intent(getContext(), OrderActivity.class);
-                                        intent.putExtra("id", arCloseOrder.get(position).getTableId());
-                                        startActivity(intent);
-                                        break;
-                                }
-                            }
-                        })
-                        .show();
+
             }
         });
 

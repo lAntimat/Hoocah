@@ -24,7 +24,7 @@
                 android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Имя"
+                android:hint="@string/fullName"
                 android:inputType="textEmailAddress"
                 android:maxLines="1" />
 

@@ -19,6 +19,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import ru.lantimat.hoocah.R;
+import ru.lantimat.hoocah.Utils.SquareImageView;
 import ru.lantimat.hoocah.models.ItemModel;
 
 
@@ -62,6 +63,7 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         Context context;
+
         ((ItemViewHolder) holder).mTitle.setText(mList.get(position).getName());
         ((ItemViewHolder) holder).mPrice.setText(String.valueOf(mList.get(position).getPrice()));
         context = ((ItemViewHolder) holder).mImg.getContext();
@@ -114,13 +116,13 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         private TextView mTitle;
         private TextView mPrice;
-        private ImageView mImg;
+        private SquareImageView mImg;
         private IconicsButton btnDots;
         public ItemViewHolder(View itemView) {
             super(itemView);
             mTitle = (TextView) itemView.findViewById(R.id.tvName);
             mPrice = (TextView) itemView.findViewById(R.id.tvPrice);
-            mImg = (ImageView) itemView.findViewById(R.id.imageView);
+            mImg = (SquareImageView) itemView.findViewById(R.id.imageView);
             btnDots = (IconicsButton) itemView.findViewById(R.id.tvDots);
 
         }

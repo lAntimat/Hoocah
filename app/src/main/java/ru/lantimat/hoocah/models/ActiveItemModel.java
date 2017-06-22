@@ -10,7 +10,7 @@ public class ActiveItemModel extends Item {
 
     String taste;
 
-    public ActiveItemModel(int id, String name, String description, String taste, float price) {
+    public ActiveItemModel(int id, String name, String description, String taste, int price) {
         this.id = id;
         this.name = name;
         this.desription = description;

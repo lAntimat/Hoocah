@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -51,6 +52,7 @@ public class BillFragment extends Fragment {
     Context context;
     Button btnCloseBill;
     Button btnAddComment;
+    ProgressBar progressBar;
 
     public static BillFragment newInstance(String param1) {
         BillFragment fragment = new BillFragment();
@@ -87,6 +89,7 @@ public class BillFragment extends Fragment {
         btnCloseBill = (Button) view.findViewById(R.id.btnPay);
         btnAddComment= (Button) view.findViewById(R.id.btnComment);
         tvInfo = (TextView) view.findViewById(R.id.tvInfo);
+        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
         btnCloseClickListener();
         btnAddCommentListener();
@@ -185,6 +188,7 @@ public class BillFragment extends Fragment {
 
         tvTotalPrice.setText("Общая цена " + String.valueOf(totalPrice));
         tvInfo.setText("Столик №" + mParam1);
+        progressBar.setVisibility(View.INVISIBLE);
         activeItemRecyclerAdapter.notifyDataSetChanged();
     }
 

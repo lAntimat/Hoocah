@@ -251,9 +251,10 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
             }
         });
         //recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        TabletOrPhone tabletOrPhone = new TabletOrPhone(getActivity()); //Узнаем телефон это или планшет
+        /*TabletOrPhone tabletOrPhone = new TabletOrPhone(getActivity()); //Узнаем телефон это или планшет
         if(tabletOrPhone.isPhone()) recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),1));
-        else if(tabletOrPhone.isTablet()) recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
+        else if(tabletOrPhone.isTablet()) recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));*/
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
 
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(itemsRecyclerAdapter);
@@ -293,7 +294,7 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
         String description = arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getDesription();
         String taste = null;
         if(tastePosition!=-1) taste = arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getTaste().get(tastePosition);
-        float price = arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getPrice();
+        int price = arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getPrice();
         ActiveItemModel activeItemModel = new ActiveItemModel(id, name, description, taste, price);
         arActiveItem.add(activeItemModel);
         activeItemPrice += activeItemModel.getPrice();

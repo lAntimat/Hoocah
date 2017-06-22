@@ -49,6 +49,7 @@ import java.util.ArrayList;
 
 import ru.lantimat.hoocah.Utils.Constants;
 import ru.lantimat.hoocah.auth.LoginActivity;
+import ru.lantimat.hoocah.models.CloseOrder;
 import ru.lantimat.hoocah.models.TableModel;
 
 import static ru.lantimat.hoocah.R.id.start;
@@ -244,6 +245,7 @@ public class MainActivity extends AppCompatActivity {
         PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName("Столики");
         PrimaryDrawerItem item2 = new PrimaryDrawerItem().withIdentifier(1).withName("История");
         PrimaryDrawerItem item3 = new PrimaryDrawerItem().withIdentifier(1).withName("Редактировать");
+        PrimaryDrawerItem item4 = new PrimaryDrawerItem().withIdentifier(1).withName("Тест");
 //        SecondaryDrawerItem item2 = new SecondaryDrawerItem().withIdentifier(2).withName(R.string.drawer_item_settings);
 
 //create the drawer and remember the `Drawer` result object
@@ -255,7 +257,8 @@ public class MainActivity extends AppCompatActivity {
                         item1,
                         new DividerDrawerItem(),
                         item2,
-                        item3
+                        item3,
+                        item4
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -266,13 +269,15 @@ public class MainActivity extends AppCompatActivity {
                             case 1:
                                 break;
                             case 3:
-                                intent = new Intent(getApplication(), TestActivity.class);
+                                intent = new Intent(getApplication(), CloseOrderActivity.class);
                                 break;
                             case 4:
                                 intent = new Intent(getApplication(), EditActivity.class);
                                 break;
                             case 5:
-                              break;
+                                intent = new Intent(getApplication(), TestActivity.class);
+
+                                break;
                         }
                         if(intent!=null) {
                             startActivity(intent);

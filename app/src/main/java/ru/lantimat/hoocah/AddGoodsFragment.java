@@ -234,7 +234,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
         dialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 GoodsModel goodsModel = arGoods.get(goodsPosition);
-                ItemModel itemModel = new ItemModel(Integer.parseInt(edId.getText().toString()), edName.getText().toString(),edDescription.getText().toString(), edUrl.getText().toString(), Float.parseFloat(edPrice.getText().toString()), null);
+                ItemModel itemModel = new ItemModel(Integer.parseInt(edId.getText().toString()), edName.getText().toString(),edDescription.getText().toString(), edUrl.getText().toString(), Integer.parseInt(edPrice.getText().toString()), null);
                 /*ArrayList<ItemModel> arItems1 = new ArrayList<>();
                 if(goodsModel.getItemModels()!=null) {
                     arItems1 = goodsModel.getItemModels();
@@ -275,7 +275,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
         dialogBuilder.setPositiveButton("Изменить", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 GoodsModel goodsModel = arGoods.get(goodsPosition);
-                ItemModel itemModel = new ItemModel(Integer.parseInt(edId.getText().toString()), edName.getText().toString(),edDescription.getText().toString(), edUrl.getText().toString(), Float.parseFloat(edPrice.getText().toString()), null);
+                ItemModel itemModel = new ItemModel(Integer.parseInt(edId.getText().toString()), edName.getText().toString(),edDescription.getText().toString(), edUrl.getText().toString(), Integer.parseInt(edPrice.getText().toString()), null);
                 /*ArrayList<ItemModel> arItems = new ArrayList<>();
                 if(goodsModel.getItemModels()!=null) {
                     arItems = goodsModel.getItemModels();
@@ -492,7 +492,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
         String description = arGoods.get(goodsPosition).getItemModels().get(itemsPosition).getDesription();
         String taste = null;
         if(tastePosition!=-1) taste = arGoods.get(goodsPosition).getItemModels().get(itemsPosition).getTaste().get(tastePosition);
-        float price = arGoods.get(goodsPosition).getItemModels().get(itemsPosition).getPrice();
+        int price = arGoods.get(goodsPosition).getItemModels().get(itemsPosition).getPrice();
         ActiveItemModel activeItemModel = new ActiveItemModel(id, name, description, taste, price);
         arActiveItem.add(activeItemModel);
         activeItemPrice += activeItemModel.getPrice();

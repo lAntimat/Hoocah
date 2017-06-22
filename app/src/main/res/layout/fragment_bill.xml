@@ -30,7 +30,6 @@
         android:layout_alignParentStart="true"
         android:gravity="right"
         android:padding="@dimen/text_padding"
-        android:text="TextView"
         app:layout_constraintTop_toBottomOf="@+id/recyclerView"
         tools:layout_editor_absoluteX="8dp" />
 
@@ -63,6 +62,16 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:padding="@dimen/text_padding"
-        android:text="TextView" />
+        android:padding="@dimen/text_padding" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="false"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="19dp" />
 </RelativeLayout>

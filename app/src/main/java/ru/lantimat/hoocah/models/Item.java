@@ -8,7 +8,7 @@ public class Item {
     int id;
     String name;
     String desription;
-    float price;
+    int price;
 
 
     public int getId() {
@@ -35,11 +35,11 @@ public class Item {
         this.desription = desription;
     }
 
-    public float getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(float price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 }

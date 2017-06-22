@@ -17,6 +17,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import ru.lantimat.hoocah.R;
+import ru.lantimat.hoocah.Utils.SquareImageView;
 import ru.lantimat.hoocah.models.GoodsModel;
 
 
@@ -73,11 +74,11 @@ public class GoodsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
     public static class GoodsViewHolder extends RecyclerView.ViewHolder {
         private TextView mTitle;
-        private ImageView mImg;
+        private SquareImageView mImg;
         public GoodsViewHolder(View itemView) {
             super(itemView);
-            mTitle = (TextView) itemView.findViewById(R.id.tvId);
-            mImg = (ImageView) itemView.findViewById(R.id.imageView);
+            mTitle = (TextView) itemView.findViewById(R.id.tvName);
+            mImg = (SquareImageView) itemView.findViewById(R.id.imageView);
         }
     }
 }
