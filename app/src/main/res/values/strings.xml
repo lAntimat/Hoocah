@@ -17,9 +17,11 @@
     <string name="new_pass">Новый пароль</string>
     <string name="title_activity_profile">Firebase</string>
     <string name="title_activity_login">Вход</string>
+    <string name="title_activity_update">Настрйоки аккаунта</string>
     <string name="hint_email">Email</string>
     <string name="hint_password">Пароль</string>
     <string name="hint_name">ФИО</string>
+    <string name="hint_img_url">Ссылка на фото</string>
     <string name="btn_login">Войти</string>
     <string name="btn_link_to_register">Еще нет аккаунта? Зарегистрируйтесь сейчас!</string>
     <string name="btn_link_to_login">У меня уже есть аккаунт. Войти</string>

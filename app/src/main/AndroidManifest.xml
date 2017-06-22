@@ -45,6 +45,10 @@
             android:name=".auth.ResetPasswordActivity"
             android:label="@string/title_activity_login"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".UpdateProfileActivity"
+            android:label="@string/title_activity_update"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

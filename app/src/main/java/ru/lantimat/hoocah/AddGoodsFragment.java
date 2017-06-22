@@ -55,6 +55,8 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    private static final String TAG = "AddGoodsFragment";
+
     // TODO: Rename and change types of parameters
     private String mParam1;
 
@@ -71,6 +73,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
     ItemsRecyclerAdapter itemsRecyclerAdapter;
     RecyclerView recyclerView;
     ArrayList<GoodsModel> arGoods;
+    ArrayList<ItemModel> arItems = new ArrayList<>();
     String pushKey;
 
     ActiveOrder activeOrder; //Модель активного заказа
@@ -232,13 +235,14 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
             public void onClick(DialogInterface dialog, int whichButton) {
                 GoodsModel goodsModel = arGoods.get(goodsPosition);
                 ItemModel itemModel = new ItemModel(Integer.parseInt(edId.getText().toString()), edName.getText().toString(),edDescription.getText().toString(), edUrl.getText().toString(), Float.parseFloat(edPrice.getText().toString()), null);
-                ArrayList<ItemModel> arItems = new ArrayList<>();
+                /*ArrayList<ItemModel> arItems1 = new ArrayList<>();
                 if(goodsModel.getItemModels()!=null) {
-                    arItems = goodsModel.getItemModels();
-                    arItems.add(itemModel);
-                } else arItems.add(itemModel);
-                goodsModel.setItemModels(arItems);
-                mDatabaseGoodsReference.child(Constants.GOODS_MODEL).child(String.valueOf(goodsPosition)).setValue(goodsModel);
+                    arItems1 = goodsModel.getItemModels();
+                    arItems1.add(itemModel);
+                } else arItems1.add(itemModel);*/
+                arItems.add(itemModel);
+                mDatabaseGoodsReference.child(Constants.GOODS_MODEL).child(String.valueOf(goodsPosition)).child(Constants.ITEMS_MODEL).setValue(arItems);
+
             }
         });
         dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -272,13 +276,13 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
             public void onClick(DialogInterface dialog, int whichButton) {
                 GoodsModel goodsModel = arGoods.get(goodsPosition);
                 ItemModel itemModel = new ItemModel(Integer.parseInt(edId.getText().toString()), edName.getText().toString(),edDescription.getText().toString(), edUrl.getText().toString(), Float.parseFloat(edPrice.getText().toString()), null);
-                ArrayList<ItemModel> arItems = new ArrayList<>();
+                /*ArrayList<ItemModel> arItems = new ArrayList<>();
                 if(goodsModel.getItemModels()!=null) {
                     arItems = goodsModel.getItemModels();
                     arItems.set(position, itemModel);
-                } else arItems.set(position, itemModel);
-                goodsModel.setItemModels(arItems);
-                mDatabaseGoodsReference.child(Constants.GOODS_MODEL).child(String.valueOf(goodsPosition)).setValue(goodsModel);
+                } else arItems.set(position, itemModel);*/
+                arItems.set(position, itemModel);
+                mDatabaseGoodsReference.child(Constants.GOODS_MODEL).child(String.valueOf(goodsPosition)).child(Constants.ITEMS_MODEL).setValue(arItems);
             }
         });
         dialogBuilder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
@@ -303,9 +307,14 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
                     GoodsModel categoryModel = postSnapshot.getValue(GoodsModel.class);
                     //Toast.makeText(getContext(), categoryModel.getName(), Toast.LENGTH_SHORT).show();
                     arGoods.add(categoryModel);
-                    if(goodsRecyclerAdapter!=null) goodsRecyclerAdapter.notifyDataSetChanged();
-                    if(itemsRecyclerAdapter!=null) itemsRecyclerAdapter.notifyDataSetChanged();
                 }
+                if(goodsPosition!=-1) {
+                    arItems.clear();
+                    arItems.addAll(arGoods.get(goodsPosition).getItemModels());
+                }
+
+                if(goodsRecyclerAdapter!=null) goodsRecyclerAdapter.notifyDataSetChanged();
+                if(itemsRecyclerAdapter!=null) itemsRecyclerAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -379,6 +388,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
                                     case 1:
                                         arGoods.remove(position);
                                         mDatabaseGoodsReference.child(Constants.GOODS_MODEL).setValue(arGoods);
+                                        if(goodsRecyclerAdapter!=null) goodsRecyclerAdapter.notifyDataSetChanged();
                                         break;
                                 }
                             }
@@ -393,7 +403,9 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
 
     private void setupItemsRecyclerView(final int position) {   //Этот метод отображает первый уровень товаров
         level = 1;
-        itemsRecyclerAdapter = new ItemsRecyclerAdapter(arGoods.get(position).getItemModels());
+        arItems.clear();
+        if(arGoods.get(position).getItemModels()!=null) arItems.addAll(arGoods.get(position).getItemModels());
+        itemsRecyclerAdapter = new ItemsRecyclerAdapter(arItems);
         itemsRecyclerAdapter.setButtonClickListener(new ItemsRecyclerAdapter.MyAdapterListener() {
             @Override
             public void btnDotsOnClick(View v, final int position1) {
@@ -426,33 +438,32 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                 //Toast.makeText(v.getContext(), "position = " + position, Toast.LENGTH_SHORT).show();
                 itemsPosition = position;
-                if(arGoods.get(goodsPosition).getItemModels().get(itemsPosition).getTaste()!=null) setupTasteRecyclerView(itemsPosition);
-            }
-        });
-
-        ItemClickSupport.addTo(recyclerView).setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClicked(RecyclerView recyclerView, final int position, View v) {
                 new MaterialDialog.Builder(getContext())
-                        .title("Описание")
                         .items(R.array.dialog_add_goods_items)
                         .itemsCallback(new MaterialDialog.ListCallback() {
                             @Override
                             public void onSelection(MaterialDialog dialog, View itemView, int position1, CharSequence text) {
                                 switch (position1) {
                                     case 0:
-                                        showChangeItemsDialog(position);
+                                        showChangeItemsDialog(itemsPosition);
                                         break;
                                     case 1:
-                                        arGoods.get(goodsPosition).getItemModels().remove(position);
-                                        mDatabaseGoodsReference.child(Constants.GOODS_MODEL).setValue(arGoods);
+                                        arItems.remove(itemsPosition);
+                                        mDatabaseGoodsReference.child(Constants.GOODS_MODEL).child(String.valueOf(goodsPosition)).child(Constants.ITEMS_MODEL).setValue(arItems);
                                         break;
                                 }
                             }
                         })
                         .positiveText("Закрыть")
                         .show();
-                return false;
+            }
+        });
+
+        ItemClickSupport.addTo(recyclerView).setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClicked(RecyclerView recyclerView, final int position, View v) {
+
+                return true;
             }
         });
 

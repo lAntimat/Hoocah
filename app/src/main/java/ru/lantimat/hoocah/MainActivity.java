@@ -2,6 +2,7 @@ package ru.lantimat.hoocah;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -38,7 +40,11 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
+import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
+import com.mikepenz.materialdrawer.util.DrawerImageLoader;
+import com.squareup.picasso.Picasso;
 
+import java.net.URL;
 import java.util.ArrayList;
 
 import ru.lantimat.hoocah.Utils.Constants;
@@ -71,13 +77,26 @@ public class MainActivity extends AppCompatActivity {
         initDrawer();
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
+        //initialize and create the image loader logic
+        DrawerImageLoader.init(new AbstractDrawerImageLoader() {
+            @Override
+            public void set(ImageView imageView, Uri uri, Drawable placeholder) {
+                Picasso.with(imageView.getContext()).load(uri).placeholder(placeholder).into(imageView);
+            }
 
-        for(int i = 1; i < 11; i++) {
+            @Override
+            public void cancel(ImageView imageView) {
+                Picasso.with(imageView.getContext()).cancelRequest(imageView);
+            }
+        });
+
+
+        /*for(int i = 1; i < 11; i++) {
             TableModel tableModel = new TableModel(i, -1, true, false, -1);
             //arTables.add(tableModel);
             databaseReference.child(Constants.TABLES).child(String.valueOf(i)).setValue(tableModel);
 
-        }
+        }*/
 
         Fragment fragment;
 
@@ -268,10 +287,11 @@ public class MainActivity extends AppCompatActivity {
 
         /*UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                 .setDisplayName("Mister Cactus")
-                .setPhotoUri(Uri.parse("http://www.nemu-nemu.com/comics/its_not_easy/789-its-not-easy-fp.jpg"))
+                .setPhotoUri(Uri.parse("https://s-media-cache-ak0.pinimg.com/originals/63/a5/e8/63a5e8ee8cdcfab2f952bcd46a73e5c4.jpg"))
                 .build();
 
-        user.updateProfile(profileUpdates)
+        FirebaseUser user1 = FirebaseAuth.getInstance().getCurrentUser();
+        user1.updateProfile(profileUpdates)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -283,23 +303,23 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
+
+            ProfileDrawerItem profile = new ProfileDrawerItem().withEmail(user.getEmail());
+            if(user.getDisplayName()!=null) profile.withName(user.getDisplayName());
+            if (user.getPhotoUrl()!=null) profile.withIcon(user.getPhotoUrl());
+
             // User is signed in
             // Create the AccountHeader
             headerResult = new AccountHeaderBuilder()
                     .withActivity(this)
                     .withHeaderBackground(R.drawable.cactus)
-                    .addProfiles(
-                            new ProfileDrawerItem()
-                                    .withName(user.getDisplayName())
-                                    .withEmail(user.getEmail())
-                                    .withIcon(user.getPhotoUrl())
-                    )
                     .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
                         @Override
                         public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
                             return false;
                         }
                     })
+                    .addProfiles(profile)
                     .withOnAccountHeaderItemLongClickListener(new AccountHeader.OnAccountHeaderItemLongClickListener() {
                         @Override
                         public boolean onProfileLongClick(View view, IProfile profile, boolean current) {
@@ -311,8 +331,9 @@ public class MainActivity extends AppCompatActivity {
                                         public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
                                             switch (position){
                                                 case 0:
+                                                    Intent intent = new Intent(MainActivity.this, UpdateProfileActivity.class);
+                                                    startActivity(intent);
                                                     break;
-
                                                 case 1:
                                                     FirebaseAuth.getInstance().signOut();
                                                     break;

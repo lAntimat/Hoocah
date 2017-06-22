@@ -91,6 +91,23 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         return 0;
     }
 
+    public void remove(int position) {
+        mList.remove(position);
+        this.notifyDataSetChanged();
+    }
+
+    public void set(int position, ItemModel itemModel) {
+        mList.set(position, itemModel);
+        this.notifyDataSetChanged();
+    }
+
+    public void add(ItemModel itemModel) {
+        mList.add(itemModel);
+
+    }
+
+
+
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
 
 
