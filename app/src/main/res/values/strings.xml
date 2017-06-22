@@ -40,6 +40,8 @@
     <string name="title_activity_test">TestActivity</string>
     <string name="title_total_price">Общая стоиомсть </string>
     <string name="title_tables_info">Столик №</string>
+    <string name="title_order_active">Активный</string>
+    <string name="title_order_inactive">Ожидает оплаты</string>
 
     <string name="dialogs.open_orders"> </string>
 
@@ -52,6 +54,11 @@
 
     <string-array name="dialog_goods_items">
         <item>Описание</item>
+    </string-array>
+
+    <string-array name="dialog_add_goods_items">
+        <item>Изменить</item>
+        <item>Удалить</item>
     </string-array>
 
     <string-array name="dialog_account_items">

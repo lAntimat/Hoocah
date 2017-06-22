@@ -22,19 +22,6 @@
         android:layout_below="@+id/toolbar">
 
         <FrameLayout
-            android:id="@+id/keyboard_frame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_weight="0.5"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent">
-
-        </FrameLayout>
-
-        <FrameLayout
             android:id="@+id/pay_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -45,6 +32,19 @@
             android:layout_marginRight="8dp"
             android:layout_weight="0.5"
             app:layout_constraintBottom_toTopOf="@+id/keyboard_frame"
+            app:layout_constraintRight_toRightOf="parent">
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/keyboard_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_weight="0.5"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent">
 
         </FrameLayout>

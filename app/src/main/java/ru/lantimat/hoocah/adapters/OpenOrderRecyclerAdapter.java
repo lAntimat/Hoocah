@@ -50,20 +50,17 @@ public class OpenOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
     }
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        String strName;
-        strName = "";
+
         if(mList.get(position).isActive()) {
-            strName += " (Активный)";
+            ((ItemViewHolder) holder).mStatus.setText(R.string.title_order_active);
             ((ItemViewHolder) holder).mStatus.setTextColor(Color.BLUE);
         }
         else {
-            strName += " (Ожидает оплаты)";
+            ((ItemViewHolder) holder).mStatus.setText(R.string.title_order_inactive);
             ((ItemViewHolder) holder).mStatus.setTextColor(Color.BLACK);
-
         }
 
         ((ItemViewHolder) holder).mId.setText("Столик №" + mList.get(position).getId());
-        ((ItemViewHolder) holder).mStatus.setText(strName);
 
         String items = "";
         if(mList!=null && mList.get(position).getArActiveItemModel()!=null) {

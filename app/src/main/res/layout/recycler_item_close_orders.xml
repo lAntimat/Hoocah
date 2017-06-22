@@ -19,7 +19,7 @@
 
         <TextView
             android:id="@+id/tvId"
-            style="@style/Base.TextAppearance.AppCompat.Body2"
+            style="@android:style/TextAppearance.Material.Headline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -58,17 +58,16 @@
             style="@style/Base.TextAppearance.AppCompat.Body2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/tvId"
-            android:layout_alignBottom="@+id/tvId"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:gravity="left"
             android:padding="@dimen/text_padding"
             android:text="Счет открыт:\n17.05.2017 20:05"
             card_view:layout_constraintHorizontal_bias="0.481"
             card_view:layout_constraintLeft_toLeftOf="parent"
             card_view:layout_constraintRight_toRightOf="parent"
-            card_view:layout_constraintTop_toBottomOf="@+id/imageView" />
+            card_view:layout_constraintTop_toBottomOf="@+id/imageView"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
 
         <TextView
             android:id="@+id/tvItems"
@@ -89,7 +88,7 @@
 
         <TextView
             android:id="@+id/tvTotalPrice"
-            style="@style/Base.TextAppearance.AppCompat.Body2"
+            style="@style/Base.TextAppearance.AppCompat.Subhead"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"

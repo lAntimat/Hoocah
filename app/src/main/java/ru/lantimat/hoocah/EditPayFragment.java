@@ -164,7 +164,7 @@ public class EditPayFragment extends Fragment {
                     float left;
                     left = pay - totalPrice;
                     editTextCash.setHelperTextColor(Color.BLACK);
-                    if(pay>0) {
+                    if(left>0) {
                         editTextCash.setHelperTextAlwaysShown(true);
                         editTextCash.setHelperText("Сдача " + String.valueOf(left));
                     }

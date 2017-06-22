@@ -99,21 +99,21 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
             mParam1 = getArguments().getString(ARG_PARAM1);
         }
         // Write a message to the database
-        mDatabaseGoodsReference = FirebaseDatabase.getInstance().getReference("goodsModel");
+        mDatabaseGoodsReference = FirebaseDatabase.getInstance().getReference(Constants.GOODS_MODEL);
         mDatabaseActiveItemReference = FirebaseDatabase.getInstance().getReference(Constants.ACTIVE_ITEM);
         mDatabaseTablesReference = FirebaseDatabase.getInstance().getReference(Constants.TABLES);
 
 
 
         ArrayList<ItemModel> arItems = new ArrayList<>();
-        ArrayList<String> arTaste = new ArrayList<>();
+        /*ArrayList<String> arTaste = new ArrayList<>();
         for(int i = 0; i < 10; i++) {
             arTaste.add("Вкус " + i);
-        }
+        }*/
 
-        arItems.add((new ItemModel(10001,"Адалия"," ","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,300f, arTaste)));
-        arItems.add((new ItemModel(10002,"Альфакир"," ","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,350f, arTaste)));
-        arItems.add((new ItemModel(10003,"Нахла"," ","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,400f, arTaste)));
+        /*arItems.add((new ItemModel(10001,"Адалия"," ","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,300f, null)));
+        arItems.add((new ItemModel(10002,"Альфакир"," ","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,350f, null)));
+        arItems.add((new ItemModel(10003,"Нахла"," ","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,400f, null)));
         GoodsModel goodsModel = new GoodsModel("Кальяны", "https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg", arItems);
         mDatabaseGoodsReference.child("0").setValue(goodsModel);
 
@@ -129,7 +129,7 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
         arItems.add((new ItemModel(20002,"Пицца Пепперони","500г","https://www.cafemumu.ru/upload/iblock/f0a/f0ac5dc84655ee7757ec5a3b0a50973e.png" ,250f, null)));
         arItems.add((new ItemModel(20003,"Пицца Мясная","650г","https://www.cafemumu.ru/upload/iblock/049/0498a8e75c122e39bd1dd03782df603a.png" ,200f, null)));
         GoodsModel goodsModel2 = new GoodsModel("Пицца", "https://thumbs.dreamstime.com/z/pizza-flat-design-sign-icon-long-shadow-vector-70753649.jpg",arItems);
-        mDatabaseGoodsReference.child("3").setValue(goodsModel2);
+        mDatabaseGoodsReference.child("2").setValue(goodsModel2);*/
 
         goodsListener();
         activeItemListener();
@@ -176,8 +176,8 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
     }
 
     private void closeOrdersListener() {
-        mDatabaseReference= FirebaseDatabase.getInstance().getReference(Constants.CLOSE_ORDER);
-        mDatabaseReference.addValueEventListener(new ValueEventListener() {
+        mDatabaseReference= FirebaseDatabase.getInstance().getReference();
+        mDatabaseReference.child(Constants.CLOSE_ORDER).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 orderId = dataSnapshot.getChildrenCount()+1;
@@ -217,7 +217,7 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                Toast.makeText(v.getContext(), "position = " + position, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(v.getContext(), "position = " + position, Toast.LENGTH_SHORT).show();
                 goodsPosition = position;
                 setupItemsRecyclerView(position);
             }
@@ -262,7 +262,7 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                Toast.makeText(v.getContext(), "position = " + position, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(v.getContext(), "position = " + position, Toast.LENGTH_SHORT).show();
                 itemsPosition = position;
                 if(arrayList.get(goodsPosition).getItemModels().get(itemsPosition).getTaste()!=null) setupTasteRecyclerView(itemsPosition);
                 else addActiveItemToFireBase();

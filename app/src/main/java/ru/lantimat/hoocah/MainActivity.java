@@ -72,12 +72,12 @@ public class MainActivity extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
 
-        /*for(int i = 1; i < 11; i++) {
+        for(int i = 1; i < 11; i++) {
             TableModel tableModel = new TableModel(i, -1, true, false, -1);
             //arTables.add(tableModel);
-            databaseReference.child(String.valueOf(i)).setValue(tableModel);
+            databaseReference.child(Constants.TABLES).child(String.valueOf(i)).setValue(tableModel);
 
-        }*/
+        }
 
         Fragment fragment;
 

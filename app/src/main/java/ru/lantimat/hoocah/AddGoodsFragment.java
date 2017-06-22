@@ -105,15 +105,15 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
             mParam1 = getArguments().getString(ARG_PARAM1);
         }
         // Write a message to the database
-        mDatabaseGoodsReference = FirebaseDatabase.getInstance().getReference("goodsModel");
+        mDatabaseGoodsReference = FirebaseDatabase.getInstance().getReference();
         mDatabaseActiveItemReference = FirebaseDatabase.getInstance().getReference(Constants.ACTIVE_ITEM);
         mDatabaseTablesReference = FirebaseDatabase.getInstance().getReference(Constants.TABLES);
 
         ArrayList<ItemModel> arItems = new ArrayList<>();
-        ArrayList<String> arTaste = new ArrayList<>();
+        /*ArrayList<String> arTaste = new ArrayList<>();
         for(int i = 0; i < 10; i++) {
             arTaste.add("Вкус " + i);
-        }
+        }*/
 
         /*arItems.add((new ItemModel(10001,"Адалия"," ","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,300f, arTaste)));
         arItems.add((new ItemModel(10002,"Альфакир"," ","https://thumbs.dreamstime.com/z/hookah-flat-design-illustration-isolated-white-background-51687110.jpg" ,350f, arTaste)));
@@ -171,18 +171,44 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
         final View dialogView = inflater.inflate(R.layout.dialog_add_goods, null);
         dialogBuilder.setView(dialogView);
 
-        final EditText edt1 = (EditText) dialogView.findViewById(R.id.edit1);
-        final EditText edt2 = (EditText) dialogView.findViewById(R.id.edit2);
+        final EditText edName = (EditText) dialogView.findViewById(R.id.edName);
+        final EditText edUrl = (EditText) dialogView.findViewById(R.id.edUrl);
 
-        dialogBuilder.setTitle("Custom dialog");
-        dialogBuilder.setMessage("Enter text below");
-        dialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+        dialogBuilder.setPositiveButton("Добавить", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                GoodsModel goodsModel = new GoodsModel(edt1.getText().toString(), edt2.getText().toString(), null);
+                GoodsModel goodsModel = new GoodsModel(edName.getText().toString(), edUrl.getText().toString(), null);
                 mDatabaseGoodsReference.child(Constants.GOODS_MODEL).child(String.valueOf(goodsCount)).setValue(goodsModel);
             }
         });
-        dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        dialogBuilder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //pass
+            }
+        });
+        AlertDialog b = dialogBuilder.create();
+        b.show();
+    }
+    public void showChangeGoodsDialog(final int position) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = this.getActivity().getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.dialog_add_goods, null);
+        dialogBuilder.setView(dialogView);
+
+        final EditText edName = (EditText) dialogView.findViewById(R.id.edName);
+        final EditText edUrl = (EditText) dialogView.findViewById(R.id.edUrl);
+
+        edName.setText(arGoods.get(position).getName());
+        edUrl.setText(arGoods.get(position).getImgUrl());
+
+        dialogBuilder.setPositiveButton("Изменить", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                GoodsModel goodsModel = arGoods.get(position);
+                goodsModel.setName(edName.getText().toString());
+                goodsModel.setImgUrl(edUrl.getText().toString());
+                mDatabaseGoodsReference.child(Constants.GOODS_MODEL).child(String.valueOf(position)).setValue(goodsModel);
+            }
+        });
+        dialogBuilder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 //pass
             }
@@ -196,18 +222,16 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
         final View dialogView = inflater.inflate(R.layout.dialog_add_items, null);
         dialogBuilder.setView(dialogView);
 
-        final EditText edt1 = (EditText) dialogView.findViewById(R.id.edit1);
-        final EditText edt2 = (EditText) dialogView.findViewById(R.id.edit2);
-        final EditText edt3 = (EditText) dialogView.findViewById(R.id.edit3);
-        final EditText edt4 = (EditText) dialogView.findViewById(R.id.edit4);
-        final EditText edt5 = (EditText) dialogView.findViewById(R.id.edit5);
+        final EditText edId = (EditText) dialogView.findViewById(R.id.edId);
+        final EditText edName = (EditText) dialogView.findViewById(R.id.edName);
+        final EditText edDescription = (EditText) dialogView.findViewById(R.id.edDescription);
+        final EditText edUrl = (EditText) dialogView.findViewById(R.id.edUrl);
+        final EditText edPrice = (EditText) dialogView.findViewById(R.id.edPrice);
 
-        dialogBuilder.setTitle("Custom dialog");
-        dialogBuilder.setMessage("Enter text below");
         dialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 GoodsModel goodsModel = arGoods.get(goodsPosition);
-                ItemModel itemModel = new ItemModel(Integer.parseInt(edt1.getText().toString()), edt2.getText().toString(),edt3.getText().toString(), edt4.getText().toString(), Float.parseFloat(edt5.getText().toString()), null);
+                ItemModel itemModel = new ItemModel(Integer.parseInt(edId.getText().toString()), edName.getText().toString(),edDescription.getText().toString(), edUrl.getText().toString(), Float.parseFloat(edPrice.getText().toString()), null);
                 ArrayList<ItemModel> arItems = new ArrayList<>();
                 if(goodsModel.getItemModels()!=null) {
                     arItems = goodsModel.getItemModels();
@@ -225,6 +249,47 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
         AlertDialog b = dialogBuilder.create();
         b.show();
     }
+    public void showChangeItemsDialog(final int position) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = this.getActivity().getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.dialog_add_items, null);
+        dialogBuilder.setView(dialogView);
+
+        final EditText edId = (EditText) dialogView.findViewById(R.id.edId);
+        final EditText edName = (EditText) dialogView.findViewById(R.id.edName);
+        final EditText edDescription = (EditText) dialogView.findViewById(R.id.edDescription);
+        final EditText edUrl = (EditText) dialogView.findViewById(R.id.edUrl);
+        final EditText edPrice = (EditText) dialogView.findViewById(R.id.edPrice);
+
+        edId.setText(String.valueOf(arGoods.get(goodsPosition).getItemModels().get(position).getId()));
+        edName.setText(arGoods.get(goodsPosition).getItemModels().get(position).getName());
+        edDescription.setText(arGoods.get(goodsPosition).getItemModels().get(position).getDesription());
+        edUrl.setText(arGoods.get(goodsPosition).getItemModels().get(position).getImgUrl());
+        edPrice.setText(String.valueOf(arGoods.get(goodsPosition).getItemModels().get(position).getPrice()));
+
+
+        dialogBuilder.setPositiveButton("Изменить", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                GoodsModel goodsModel = arGoods.get(goodsPosition);
+                ItemModel itemModel = new ItemModel(Integer.parseInt(edId.getText().toString()), edName.getText().toString(),edDescription.getText().toString(), edUrl.getText().toString(), Float.parseFloat(edPrice.getText().toString()), null);
+                ArrayList<ItemModel> arItems = new ArrayList<>();
+                if(goodsModel.getItemModels()!=null) {
+                    arItems = goodsModel.getItemModels();
+                    arItems.set(position, itemModel);
+                } else arItems.set(position, itemModel);
+                goodsModel.setItemModels(arItems);
+                mDatabaseGoodsReference.child(Constants.GOODS_MODEL).child(String.valueOf(goodsPosition)).setValue(goodsModel);
+            }
+        });
+        dialogBuilder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //pass
+            }
+        });
+        AlertDialog b = dialogBuilder.create();
+        b.show();
+    }
+
 
     private void goodsListener() {
         mDatabaseGoodsReference = FirebaseDatabase.getInstance().getReference();
@@ -238,7 +303,8 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
                     GoodsModel categoryModel = postSnapshot.getValue(GoodsModel.class);
                     //Toast.makeText(getContext(), categoryModel.getName(), Toast.LENGTH_SHORT).show();
                     arGoods.add(categoryModel);
-                    goodsRecyclerAdapter.notifyDataSetChanged();
+                    if(goodsRecyclerAdapter!=null) goodsRecyclerAdapter.notifyDataSetChanged();
+                    if(itemsRecyclerAdapter!=null) itemsRecyclerAdapter.notifyDataSetChanged();
                 }
             }
 
@@ -292,9 +358,34 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                Toast.makeText(v.getContext(), "position = " + position, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(v.getContext(), "position = " + position, Toast.LENGTH_SHORT).show();
                 goodsPosition = position;
                 setupItemsRecyclerView(position);
+            }
+        });
+
+        ItemClickSupport.addTo(recyclerView).setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClicked(RecyclerView recyclerView, final int position, View v) {
+                new MaterialDialog.Builder(getContext())
+                        .items(R.array.dialog_add_goods_items)
+                        .itemsCallback(new MaterialDialog.ListCallback() {
+                            @Override
+                            public void onSelection(MaterialDialog dialog, View itemView, int position1, CharSequence text) {
+                                switch (position1) {
+                                    case 0:
+                                        showChangeGoodsDialog(position);
+                                        break;
+                                    case 1:
+                                        arGoods.remove(position);
+                                        mDatabaseGoodsReference.child(Constants.GOODS_MODEL).setValue(arGoods);
+                                        break;
+                                }
+                            }
+                        })
+                        .positiveText("Закрыть")
+                        .show();
+                return true;
             }
         });
 
@@ -314,7 +405,6 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
                                 switch (which) {
                                     case 0:
                                         new MaterialDialog.Builder(getContext())
-                                                .title("Описание")
                                                 .content(arGoods.get(goodsPosition).getItemModels().get(position1).getDesription())
                                                 .positiveText("Закрыть")
                                                 .show();
@@ -326,10 +416,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
             }
         });
         //recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        TabletOrPhone tabletOrPhone = new TabletOrPhone(getActivity()); //Узнаем телефон это или планшет
-        if(tabletOrPhone.isPhone()) recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),1));
-        else if(tabletOrPhone.isTablet()) recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
-
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(itemsRecyclerAdapter);
 
@@ -337,11 +424,39 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                Toast.makeText(v.getContext(), "position = " + position, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(v.getContext(), "position = " + position, Toast.LENGTH_SHORT).show();
                 itemsPosition = position;
                 if(arGoods.get(goodsPosition).getItemModels().get(itemsPosition).getTaste()!=null) setupTasteRecyclerView(itemsPosition);
             }
         });
+
+        ItemClickSupport.addTo(recyclerView).setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClicked(RecyclerView recyclerView, final int position, View v) {
+                new MaterialDialog.Builder(getContext())
+                        .title("Описание")
+                        .items(R.array.dialog_add_goods_items)
+                        .itemsCallback(new MaterialDialog.ListCallback() {
+                            @Override
+                            public void onSelection(MaterialDialog dialog, View itemView, int position1, CharSequence text) {
+                                switch (position1) {
+                                    case 0:
+                                        showChangeItemsDialog(position);
+                                        break;
+                                    case 1:
+                                        arGoods.get(goodsPosition).getItemModels().remove(position);
+                                        mDatabaseGoodsReference.child(Constants.GOODS_MODEL).setValue(arGoods);
+                                        break;
+                                }
+                            }
+                        })
+                        .positiveText("Закрыть")
+                        .show();
+                return false;
+            }
+        });
+
+
     }
 
     private void setupTasteRecyclerView(int position) {
