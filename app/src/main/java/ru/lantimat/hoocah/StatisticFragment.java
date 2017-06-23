@@ -90,7 +90,8 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
 
     private DatabaseReference mDatabaseReference;
 
-    float sum = 0;
+    float profitDay = 0;
+    float profitWeek = 0;
     float sumForDay = 0;
     long closeTime;
     int dayCount = 7;
@@ -153,16 +154,16 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
             e.printStackTrace();
         }
 
-        sum = 0;
+        sumForDay = 0;
         myTopPostsQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
-                    sum += postSnapshot.getValue(CloseOrder.class).getTotalPrice();
-                    Log.d(TAG, "хмхм" + sum);
+                    sumForDay += postSnapshot.getValue(CloseOrder.class).getTotalPrice();
+                    Log.d(TAG, "хмхм" + sumForDay);
                 }
-                Log.d(TAG, "Выручка" + sum);
-                tvDay.setText("Выручка за день " + sum);
+                Log.d(TAG, "Выручка" + sumForDay);
+                tvDay.setText("Выручка за день " + sumForDay);
             }
 
             @Override
@@ -187,7 +188,7 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
             e.printStackTrace();
         }
 
-        sum = 0;
+        profitWeek = 0;
         sumForDay = 0;
 
         long openTime;
@@ -196,11 +197,13 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
-                    sum += postSnapshot.getValue(CloseOrder.class).getTotalPrice();
+                    String date;
+                    profitWeek+= postSnapshot.getValue(CloseOrder.class).getTotalPrice();
                     closeTime = postSnapshot.getValue(CloseOrder.class).getUnixTimeClose();
                     DateTime lastWeek = new DateTime().minusDays(dayCount);
-                    String date = lastWeek.getYear() + "-" + lastWeek.getMonthOfYear() + "-" + lastWeek.getDayOfMonth();
+                    date = lastWeek.getYear() + "-" + lastWeek.getMonthOfYear() + "-" + lastWeek.getDayOfMonth();
                     try {
+
                         Log.d(TAG, "Время закрытия" + closeTime);
                         Log.d(TAG, "Начало дня " + getStartOfDayInMillis(date));
                         Log.d(TAG, "Конец дня " + getEndOfDayInMillis(date));
@@ -208,10 +211,14 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
                                 sumForDay += postSnapshot.getValue(CloseOrder.class).getTotalPrice();
                                 Log.d(TAG, "if " + sumForDay);
                             } else {
-                                Log.d(TAG, "else" + sumForDay);
-                                dayCount --;
                                 arProfit.add(sumForDay);
                                 sumForDay = 0;
+                                while (closeTime < getStartOfDayInMillis(date)) {
+                                    DateTime lastWeek1 = new DateTime().minusDays(dayCount);
+                                    date = lastWeek1.getYear() + "-" + lastWeek1.getMonthOfYear() + "-" + lastWeek1.getDayOfMonth();
+                                    dayCount--;
+                                }
+                                Log.d(TAG, "else" + sumForDay);
                                 sumForDay += postSnapshot.getValue(CloseOrder.class).getTotalPrice();
                             }
                     } catch (ParseException e) {
@@ -219,7 +226,7 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
                     }
                 }
                 arProfit.add(sumForDay);
-                tvWeek.setText("Выручка за неделю " + sum);
+                tvWeek.setText("Выручка за неделю " + profitWeek);
                 setData(arProfit);
                 mChart.invalidate();
 
