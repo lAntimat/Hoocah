@@ -17,16 +17,25 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="false"
             android:layout_centerHorizontal="false"
-            android:layout_centerVertical="true"
-            android:text="TextView" />
+            android:layout_centerVertical="false"
+            android:text="TextView"
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/tvWeek"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView"
-            android:layout_below="@+id/tvDay"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/tvDay"
+            android:text="TextView"
+            android:textSize="20sp" />
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/chart1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/tvWeek" />
+
     </RelativeLayout>
 </FrameLayout>

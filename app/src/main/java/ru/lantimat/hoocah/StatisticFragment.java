@@ -1,20 +1,42 @@
 package ru.lantimat.hoocah;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IFillFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,13 +46,18 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
+import org.joda.time.DateTime;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
 import ru.lantimat.hoocah.Utils.Constants;
+import ru.lantimat.hoocah.Utils.DayAxisValueFormatter;
 import ru.lantimat.hoocah.Utils.ItemClickSupport;
+import ru.lantimat.hoocah.Utils.MyAxisValueFormatter;
+import ru.lantimat.hoocah.Utils.XYMarkerView;
 import ru.lantimat.hoocah.adapters.GoodsRecyclerAdapter;
 import ru.lantimat.hoocah.adapters.ItemsRecyclerAdapter;
 import ru.lantimat.hoocah.adapters.TasteRecyclerAdapter;
@@ -44,7 +71,7 @@ import ru.lantimat.hoocah.models.TableModel;
 import static android.content.ContentValues.TAG;
 
 
-public class StatisticFragment extends Fragment implements OnBackPressedListener {
+public class StatisticFragment extends Fragment implements OnBackPressedListener, OnChartValueSelectedListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -59,10 +86,15 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
 
     TextView tvDay, tvWeek;
 
+    private BarChart mChart;
 
     private DatabaseReference mDatabaseReference;
 
     float sum = 0;
+    float sumForDay = 0;
+    long closeTime;
+    int dayCount = 7;
+
     public StatisticFragment() {
         // Required empty public constructor
     }
@@ -99,13 +131,24 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         getProfit();
         getProfitWeek();
 
+
+
+
     }
 
     private void getProfit() {
+
+        DateTime now = DateTime.now();
+        DateTime lastWeek = new DateTime();
+        String date;
+        date = lastWeek.getYear() + "-" + lastWeek.getMonthOfYear() + "-" + lastWeek.getDayOfMonth();
+        Log.d(TAG, "date" + date);
+
+
         Query myTopPostsQuery = null;
         try {
             myTopPostsQuery = mDatabaseReference.child(Constants.CLOSE_ORDER)
-                        .orderByChild("unixTimeClose").startAt(getStartOfDayInMillis("2017-06-23"));
+                        .orderByChild("unixTimeClose").startAt(getStartOfDayInMillis(date));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -129,22 +172,57 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         });
     }
     private void getProfitWeek() {
+
+        DateTime now = DateTime.now();
+        DateTime lastWeek = new DateTime().minusDays(7);
+        String date;
+        date = lastWeek.getYear() + "-" + lastWeek.getMonthOfYear() + "-" + lastWeek.getDayOfMonth();
+        Log.d(TAG, "date" + date);
+
         Query myTopPostsQuery = null;
         try {
             myTopPostsQuery = mDatabaseReference.child(Constants.CLOSE_ORDER)
-                        .orderByChild("unixTimeClose").startAt(getStartOfDayInMillis("2017-06-16"));
+                        .orderByChild("unixTimeClose").startAt(getStartOfDayInMillis(date));
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
         sum = 0;
+        sumForDay = 0;
+
+        long openTime;
+        final ArrayList<Float> arProfit = new ArrayList<>();
         myTopPostsQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
                     sum += postSnapshot.getValue(CloseOrder.class).getTotalPrice();
+                    closeTime = postSnapshot.getValue(CloseOrder.class).getUnixTimeClose();
+                    DateTime lastWeek = new DateTime().minusDays(dayCount);
+                    String date = lastWeek.getYear() + "-" + lastWeek.getMonthOfYear() + "-" + lastWeek.getDayOfMonth();
+                    try {
+                        Log.d(TAG, "Время закрытия" + closeTime);
+                        Log.d(TAG, "Начало дня " + getStartOfDayInMillis(date));
+                        Log.d(TAG, "Конец дня " + getEndOfDayInMillis(date));
+                            if (closeTime > getStartOfDayInMillis(date) & closeTime < getEndOfDayInMillis(date)) {
+                                sumForDay += postSnapshot.getValue(CloseOrder.class).getTotalPrice();
+                                Log.d(TAG, "if " + sumForDay);
+                            } else {
+                                Log.d(TAG, "else" + sumForDay);
+                                dayCount --;
+                                arProfit.add(sumForDay);
+                                sumForDay = 0;
+                                sumForDay += postSnapshot.getValue(CloseOrder.class).getTotalPrice();
+                            }
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                 }
+                arProfit.add(sumForDay);
                 tvWeek.setText("Выручка за неделю " + sum);
+                setData(arProfit);
+                mChart.invalidate();
+
             }
 
             @Override
@@ -163,10 +241,120 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         tvDay = (TextView) view.findViewById(R.id.tvDay);
         tvWeek = (TextView) view.findViewById(R.id.tvWeek);
 
+        mChart = (BarChart) view.findViewById(R.id.chart1);
+        mChart.setOnChartValueSelectedListener(this);
+
+        mChart.setDrawBarShadow(false);
+        mChart.setDrawValueAboveBar(true);
+
+        mChart.getDescription().setEnabled(false);
+
+        // if more than 60 entries are displayed in the chart, no values will be
+        // drawn
+        mChart.setMaxVisibleValueCount(60);
+
+        // scaling can now only be done on x- and y-axis separately
+        mChart.setPinchZoom(false);
+
+        mChart.setDrawGridBackground(false);
+        // mChart.setDrawYLabels(false);
+
+        IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(mChart);
+
+        XAxis xAxis = mChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        //xAxis.setTypeface(mTfLight);
+        xAxis.setDrawGridLines(false);
+        xAxis.setGranularity(1f); // only intervals of 1 day
+        xAxis.setLabelCount(7);
+        xAxis.setValueFormatter(xAxisFormatter);
+
+        IAxisValueFormatter custom = new MyAxisValueFormatter();
+
+        YAxis leftAxis = mChart.getAxisLeft();
+        //leftAxis.setTypeface(mTfLight);
+        leftAxis.setLabelCount(8, false);
+        leftAxis.setValueFormatter(custom);
+        leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+        leftAxis.setSpaceTop(15f);
+        leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+
+        YAxis rightAxis = mChart.getAxisRight();
+        rightAxis.setDrawGridLines(false);
+        //rightAxis.setTypeface(mTfLight);
+        rightAxis.setLabelCount(8, false);
+        rightAxis.setValueFormatter(custom);
+        rightAxis.setSpaceTop(15f);
+        rightAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+
+        Legend l = mChart.getLegend();
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        l.setDrawInside(false);
+        l.setForm(Legend.LegendForm.SQUARE);
+        l.setFormSize(9f);
+        l.setTextSize(11f);
+        l.setXEntrySpace(4f);
+        // l.setExtra(ColorTemplate.VORDIPLOM_COLORS, new String[] { "abc",
+        // "def", "ghj", "ikl", "mno" });
+        // l.setCustom(ColorTemplate.VORDIPLOM_COLORS, new String[] { "abc",
+        // "def", "ghj", "ikl", "mno" });
+
+        XYMarkerView mv = new XYMarkerView(getContext(), xAxisFormatter);
+        mv.setChartView(mChart); // For bounds control
+        mChart.setMarker(mv); // Set the marker to the chart
 
         return view;
     }
 
+
+    private void setData(ArrayList<Float> ar) {
+
+        Calendar calendar = Calendar.getInstance();
+        int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
+        float start = dayOfYear-7;
+
+        ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
+
+        for (int i = (int) start, j = 0; i < ar.size()+start; i++, j++) {
+            //float mult = (range + 1);
+            //float val = (float) (Math.random() * mult);
+
+            //if (Math.random() * 100 < 25) {
+            //    yVals1.add(new BarEntry(i, val, getResources().getDrawable(R.drawable.star)));
+            //} else {
+            //  yVals1.add(new BarEntry(i, val));
+            //}
+            yVals1.add(new BarEntry(i, ar.get(j)));
+        }
+
+        BarDataSet set1;
+
+        if (mChart.getData() != null &&
+                mChart.getData().getDataSetCount() > 0) {
+            set1 = (BarDataSet) mChart.getData().getDataSetByIndex(0);
+            set1.setValues(yVals1);
+            mChart.getData().notifyDataChanged();
+            mChart.notifyDataSetChanged();
+        } else {
+            set1 = new BarDataSet(yVals1, "The year 2017");
+
+            set1.setDrawIcons(false);
+
+            set1.setColors(ColorTemplate.MATERIAL_COLORS);
+
+            ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
+            dataSets.add(set1);
+
+            BarData data = new BarData(dataSets);
+            data.setValueTextSize(10f);
+            //data.setValueTypeface(mTfLight);
+            data.setBarWidth(0.9f);
+
+            mChart.setData(data);
+        }
+    }
 
     /**
      * @param date the date in the format "yyyy-MM-dd"
@@ -179,7 +367,7 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
-        Log.d(TAG, "Начало дня" + calendar.getTimeInMillis());
+        //Log.d(TAG, "Начало дня" + calendar.getTimeInMillis());
         return calendar.getTimeInMillis()/1000L;
     }
 
@@ -189,7 +377,7 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
     public long getEndOfDayInMillis(String date) throws ParseException {
         // Add one day's time to the beginning of the day.
         // 24 hours * 60 minutes * 60 seconds * 1000 milliseconds = 1 day
-        return getStartOfDayInMillis(date) + (24 * 60 * 60 * 1000);
+        return getStartOfDayInMillis(date) + (24 * 60 * 60);
     }
 
 
@@ -248,4 +436,13 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         //Toast.makeText(getContext(), "BackPressed", Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onValueSelected(Entry e, Highlight h) {
+
+    }
+
+    @Override
+    public void onNothingSelected() {
+
+    }
 }
