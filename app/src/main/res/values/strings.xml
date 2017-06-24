@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Hoocah</string>
     <string name="action_settings">Settings</string>
+    <string name="menu_statistik_for_week">Статистика за неделю</string>
+    <string name="menu_statistik_for_month">Статистика за месяц</string>
+    <string name="menu_statistik_for_any_date">Статистика за период</string>
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -17,7 +21,7 @@
     <string name="new_pass">Новый пароль</string>
     <string name="title_activity_profile">Firebase</string>
     <string name="title_activity_login">Вход</string>
-    <string name="title_activity_update">Настрйоки аккаунта</string>
+    <string name="title_activity_update">Настройки аккаунта</string>
     <string name="hint_email">Email</string>
     <string name="hint_password">Пароль</string>
     <string name="hint_name">Свое имя назови, юный падаван</string>
@@ -44,8 +48,8 @@
     <string name="forgot_password_msg">Нам нужен идентификатор вашей электронной почты, чтобы отправить вам инструкции по сбросу пароля.</string>
     <string name="fullName">Свое имя назови, юный падаван</string>
     <string name="passport">Пасспортные данные</string>
-    <string name="title_activity_edit">EditActivity</string>
-    <string name="title_activity_test">TestActivity</string>
+    <string name="title_activity_edit">Редактирование</string>
+    <string name="title_activity_test">Статистика</string>
     <string name="title_total_price">Общая стоиомсть </string>
     <string name="title_tables_info">Столик №</string>
     <string name="title_order_active">Активный</string>

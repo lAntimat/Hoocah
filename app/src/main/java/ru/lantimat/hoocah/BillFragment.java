@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -120,10 +121,11 @@ public class BillFragment extends Fragment {
                             @Override
                             public void onInput(MaterialDialog dialog, CharSequence input) {
                                 text = String.valueOf(input);
-                                if(!text.equals("")) {
+                                if(!text.equals("") & activeOrder!=null) {
                                     activeOrder.setComment(text);
                                     mDatabaseActiveItemReference.child(mParam1).setValue(activeOrder);
-                                }
+                                } else Toast.makeText(getContext(), "Для начала добавьте что нибудь!", Toast.LENGTH_SHORT).show();
+
                             }})
                         .show();
 
@@ -208,9 +210,11 @@ public class BillFragment extends Fragment {
     }
 
     private void payButton() {
-        Intent intent = new Intent(getContext(), PayActivity.class);
-        intent.putExtra("id", activeOrder.getId());
-        startActivityForResult(intent, 1);
+        if(activeOrder!=null) {
+            Intent intent = new Intent(getContext(), PayActivity.class);
+            intent.putExtra("id", activeOrder.getId());
+            startActivityForResult(intent, 1);
+        }
     }
 
     @Override

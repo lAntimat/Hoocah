@@ -1,19 +1,26 @@
 package ru.lantimat.hoocah;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -95,6 +102,16 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
     float sumForDay = 0;
     long closeTime;
     int dayCount = 7;
+    long timeToCompare;
+    long lastTimeToCompare;
+    final long oneDayUnixTime = 86400;
+
+    ArrayList<Long> arCloseTime = new ArrayList<>();
+    ArrayList<Float> arTotalPrices = new ArrayList<>();
+    ArrayList<Float> arProfit = new ArrayList<>();
+
+    Calendar dateAndTime=Calendar.getInstance();
+    DateTime now = DateTime.now();
 
     public StatisticFragment() {
         // Required empty public constructor
@@ -130,10 +147,9 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
 
 
         getProfit();
-        getProfitWeek();
-
-
-
+        DateTime now = DateTime.now();
+        getProfitWeek(now.getDayOfWeek()+1, "Выручка за неделю");
+        setHasOptionsMenu(true);
 
     }
 
@@ -149,21 +165,21 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         Query myTopPostsQuery = null;
         try {
             myTopPostsQuery = mDatabaseReference.child(Constants.CLOSE_ORDER)
-                        .orderByChild("unixTimeClose").startAt(getStartOfDayInMillis(date));
+                        .orderByChild("unixTimeClose").startAt(getStartOfDayInMillis(date) - 6*60*60);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        sumForDay = 0;
+        profitDay = 0;
         myTopPostsQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
-                    sumForDay += postSnapshot.getValue(CloseOrder.class).getTotalPrice();
-                    Log.d(TAG, "хмхм" + sumForDay);
+                    profitDay += postSnapshot.getValue(CloseOrder.class).getTotalPrice();
+                    Log.d(TAG, "хмхм" + profitDay);
                 }
-                Log.d(TAG, "Выручка" + sumForDay);
-                tvDay.setText("Выручка за день " + sumForDay);
+                Log.d(TAG, "Выручка" + profitDay);
+                tvDay.setText("Выручка за смену " + profitDay);
             }
 
             @Override
@@ -172,10 +188,13 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
             }
         });
     }
-    private void getProfitWeek() {
+    private void getProfitWeek(final int dayCount, final String str) {
 
-        DateTime now = DateTime.now();
-        DateTime lastWeek = new DateTime().minusDays(7);
+        arProfit.clear();
+        arCloseTime.clear();
+        arTotalPrices.clear();
+        now = DateTime.now();
+        DateTime lastWeek = new DateTime().minusDays(dayCount);
         String date;
         date = lastWeek.getYear() + "-" + lastWeek.getMonthOfYear() + "-" + lastWeek.getDayOfMonth();
         Log.d(TAG, "date" + date);
@@ -183,53 +202,120 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         Query myTopPostsQuery = null;
         try {
             myTopPostsQuery = mDatabaseReference.child(Constants.CLOSE_ORDER)
-                        .orderByChild("unixTimeClose").startAt(getStartOfDayInMillis(date));
+                    .orderByChild("unixTimeClose").startAt(getStartOfDayInMillis(date));
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
         profitWeek = 0;
         sumForDay = 0;
+        try {
+            timeToCompare = getStartOfDayInMillis(date) - 6*60*60; //Корректировка под время работы заведения
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         long openTime;
-        final ArrayList<Float> arProfit = new ArrayList<>();
         myTopPostsQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
                     String date;
                     profitWeek+= postSnapshot.getValue(CloseOrder.class).getTotalPrice();
-                    closeTime = postSnapshot.getValue(CloseOrder.class).getUnixTimeClose();
-                    DateTime lastWeek = new DateTime().minusDays(dayCount);
-                    date = lastWeek.getYear() + "-" + lastWeek.getMonthOfYear() + "-" + lastWeek.getDayOfMonth();
-                    try {
+                    arCloseTime.add(postSnapshot.getValue(CloseOrder.class).getUnixTimeClose());
+                    arTotalPrices.add(postSnapshot.getValue(CloseOrder.class).getTotalPrice());
+                    //Log.d(TAG, "Время закрытия" + closeTime);
+                }
+                tvWeek.setText(str + " " + profitWeek);
 
-                        Log.d(TAG, "Время закрытия" + closeTime);
-                        Log.d(TAG, "Начало дня " + getStartOfDayInMillis(date));
-                        Log.d(TAG, "Конец дня " + getEndOfDayInMillis(date));
-                            if (closeTime > getStartOfDayInMillis(date) & closeTime < getEndOfDayInMillis(date)) {
-                                sumForDay += postSnapshot.getValue(CloseOrder.class).getTotalPrice();
-                                Log.d(TAG, "if " + sumForDay);
-                            } else {
-                                arProfit.add(sumForDay);
-                                sumForDay = 0;
-                                while (closeTime < getStartOfDayInMillis(date)) {
-                                    DateTime lastWeek1 = new DateTime().minusDays(dayCount);
-                                    date = lastWeek1.getYear() + "-" + lastWeek1.getMonthOfYear() + "-" + lastWeek1.getDayOfMonth();
-                                    dayCount--;
-                                }
-                                Log.d(TAG, "else" + sumForDay);
-                                sumForDay += postSnapshot.getValue(CloseOrder.class).getTotalPrice();
-                            }
-                    } catch (ParseException e) {
-                        e.printStackTrace();
+
+                while (arCloseTime.get(0)  > timeToCompare + oneDayUnixTime) {
+                    timeToCompare = timeToCompare + oneDayUnixTime;
+                    arProfit.add(sumForDay);
+                }
+                for(int i = 0; i < arTotalPrices.size(); i++) {
+
+                    if (arCloseTime.get(i) > timeToCompare && arCloseTime.get(i) < (timeToCompare + oneDayUnixTime)) {
+                        sumForDay = sumForDay + arTotalPrices.get(i);
+                    } else {
+                        arProfit.add(sumForDay);
+                        sumForDay = 0;
+                        timeToCompare = timeToCompare + oneDayUnixTime;
+                        sumForDay =+ arTotalPrices.get(i);
                     }
                 }
                 arProfit.add(sumForDay);
-                tvWeek.setText("Выручка за неделю " + profitWeek);
-                setData(arProfit);
+                setData(arProfit, now.getDayOfYear()-dayCount);
                 mChart.invalidate();
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+    private void getProfitForPeriod(final DateTime firstDayDate, DateTime lastDayDate) {
+
+        arProfit.clear();
+        arCloseTime.clear();
+        arTotalPrices.clear();
+        final String firstDayDataStr;
+        final String lastDayDataStr;
+        firstDayDataStr = firstDayDate.getYear() + "-" + firstDayDate.getMonthOfYear() + "-" + firstDayDate.getDayOfMonth();
+        lastDayDataStr = lastDayDate.getYear() + "-" + lastDayDate.getMonthOfYear() + "-" + lastDayDate.getDayOfMonth();
+        Log.d(TAG, "date" + firstDayDataStr);
+
+        Query myTopPostsQuery = null;
+        try {
+            myTopPostsQuery = mDatabaseReference.child(Constants.CLOSE_ORDER)
+                    .orderByChild("unixTimeClose").startAt(getStartOfDayInMillis(firstDayDataStr));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        profitWeek = 0;
+        sumForDay = 0;
+        try {
+            timeToCompare = getStartOfDayInMillis(firstDayDataStr) - 6*60*60; //Корректировка под время работы заведения
+            lastTimeToCompare = getStartOfDayInMillis(lastDayDataStr) - 6*60*60; //Корректировка под время работы заведения
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        long openTime;
+        myTopPostsQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                    String date;
+                    profitWeek+= postSnapshot.getValue(CloseOrder.class).getTotalPrice();
+                    arCloseTime.add(postSnapshot.getValue(CloseOrder.class).getUnixTimeClose());
+                    arTotalPrices.add(postSnapshot.getValue(CloseOrder.class).getTotalPrice());
+                    //Log.d(TAG, "Время закрытия" + closeTime);
+                }
+                tvWeek.setText(firstDayDataStr + " " + "Выручка за период с " + firstDayDataStr + " по " + lastDayDataStr);
+
+
+                while (arCloseTime.get(0)  > timeToCompare + oneDayUnixTime) {
+                    timeToCompare = timeToCompare + oneDayUnixTime;
+                    arProfit.add(sumForDay);
+                }
+                for(int i = 0; i < arTotalPrices.size(); i++) {
+
+                    if (arCloseTime.get(i) > timeToCompare && arCloseTime.get(i) < (timeToCompare + oneDayUnixTime)) {
+                        sumForDay = sumForDay + arTotalPrices.get(i);
+                    } else {
+                        if(lastTimeToCompare<arCloseTime.get(i)) break;
+                        arProfit.add(sumForDay);
+                        sumForDay = 0;
+                        timeToCompare = timeToCompare + oneDayUnixTime;
+                        sumForDay =+ arTotalPrices.get(i);
+                    }
+                }
+                arProfit.add(sumForDay);
+                setData(arProfit, firstDayDate.getDayOfYear());
+                mChart.invalidate();
             }
 
             @Override
@@ -239,12 +325,17 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         });
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
         View view = inflater.inflate(R.layout.fragment_statistic, container, false);
+
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+
         tvDay = (TextView) view.findViewById(R.id.tvDay);
         tvWeek = (TextView) view.findViewById(R.id.tvWeek);
 
@@ -316,11 +407,11 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
     }
 
 
-    private void setData(ArrayList<Float> ar) {
+    private void setData(ArrayList<Float> ar, int startDay) {
 
         Calendar calendar = Calendar.getInstance();
         int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
-        float start = dayOfYear-7;
+        float start = startDay;
 
         ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
 
@@ -451,5 +542,66 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
     @Override
     public void onNothingSelected() {
 
+    }
+
+    // отображаем диалоговое окно для выбора даты
+    public void setDate(View v) {
+        new DatePickerDialog(getActivity(), d,
+                dateAndTime.get(Calendar.YEAR),
+                dateAndTime.get(Calendar.MONTH),
+                dateAndTime.get(Calendar.DAY_OF_MONTH))
+                .show();
+    }
+
+
+
+
+    // установка обработчика выбора даты
+    DatePickerDialog.OnDateSetListener d=new DatePickerDialog.OnDateSetListener() {
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            dateAndTime.set(Calendar.YEAR, year);
+            dateAndTime.set(Calendar.MONTH, monthOfYear);
+            dateAndTime.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            DateTime date = new DateTime();
+            date.withYear(Calendar.YEAR);
+            date.withMonthOfYear(Calendar.MONTH);
+            date.withDayOfMonth(Calendar.DAY_OF_MONTH);
+            //getProfitForPeriod();
+
+        }
+    };
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        //getActivity().getMenuInflater().inflate(R.menu.menu_statistik, menu);
+        //super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        Log.d(TAG, "Menu_click");
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.statistik_for_week) {
+            DateTime now = DateTime.now();
+            getProfitWeek(now.getDayOfWeek()+1, "Выручка за неделю");
+            return true;
+        }
+        if (id == R.id.statistik_for_month) {
+            DateTime now = DateTime.now();
+            getProfitWeek(now.getDayOfMonth()+1, "Выручка за месяц");
+            return true;
+        }
+        if (id == R.id.statistik_for_period) {
+            DateTime now = DateTime.now();
+            getProfitForPeriod(now.minusDays(3), now.minusDays(1));
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

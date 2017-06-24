@@ -11,6 +11,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -158,7 +159,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
             @Override
             public void onClick(View v) {
               if(goodsPosition==-1) showAddGoodsDialog();
-                else if(goodsPosition!=-1) showAddItemsDialog();
+                else showAddItemsDialog();
             }
         });
 
@@ -177,8 +178,19 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
         final EditText edName = (EditText) dialogView.findViewById(R.id.edName);
         final EditText edUrl = (EditText) dialogView.findViewById(R.id.edUrl);
 
+
         dialogBuilder.setPositiveButton("Добавить", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
+                if(TextUtils.isEmpty(edName.getText())) {
+                    Toast.makeText(getContext(), "Введите имя", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(TextUtils.isEmpty(edUrl.getText())) {
+                    Toast.makeText(getContext(), "Введите имя", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 GoodsModel goodsModel = new GoodsModel(edName.getText().toString(), edUrl.getText().toString(), null);
                 mDatabaseGoodsReference.child(Constants.GOODS_MODEL).child(String.valueOf(goodsCount)).setValue(goodsModel);
             }
@@ -205,6 +217,17 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
 
         dialogBuilder.setPositiveButton("Изменить", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
+
+                if(TextUtils.isEmpty(edName.getText())) {
+                    Toast.makeText(getContext(), "Введите имя", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(TextUtils.isEmpty(edUrl.getText())) {
+                    Toast.makeText(getContext(), "Введите имя", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 GoodsModel goodsModel = arGoods.get(position);
                 goodsModel.setName(edName.getText().toString());
                 goodsModel.setImgUrl(edUrl.getText().toString());
@@ -233,6 +256,33 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
 
         dialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
+
+                if(TextUtils.isEmpty(edId.getText())) {
+                    Toast.makeText(getContext(), "Введите Id", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(TextUtils.isEmpty(edName.getText())) {
+                    Toast.makeText(getContext(), "Введите имя", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(TextUtils.isEmpty(edDescription.getText())) {
+                    Toast.makeText(getContext(), "Введите описание", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(TextUtils.isEmpty(edUrl.getText())) {
+                    Toast.makeText(getContext(), "Введите url", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(TextUtils.isEmpty(edPrice.getText())) {
+                    Toast.makeText(getContext(), "Введите цену", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+
                 GoodsModel goodsModel = arGoods.get(goodsPosition);
                 ItemModel itemModel = new ItemModel(Integer.parseInt(edId.getText().toString()), edName.getText().toString(),edDescription.getText().toString(), edUrl.getText().toString(), Integer.parseInt(edPrice.getText().toString()), null);
                 /*ArrayList<ItemModel> arItems1 = new ArrayList<>();
@@ -529,6 +579,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
                 break;
             case 1:
                 itemsPosition = -1;
+                goodsPosition = +1;
                 setupGoodsRecyclerView();
                 break;
             case 2:

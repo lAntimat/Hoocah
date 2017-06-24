@@ -1,0 +1,20 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="ru.lantimat.hoocah.MainActivity">
+    <item
+        android:id="@+id/statistik_for_week"
+        android:orderInCategory="100"
+        android:title="@string/menu_statistik_for_week"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/statistik_for_month"
+        android:orderInCategory="100"
+        android:title="@string/menu_statistik_for_month"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/statistik_for_period"
+        android:orderInCategory="100"
+        android:title="@string/menu_statistik_for_any_date"
+        app:showAsAction="never" />
+</menu>
