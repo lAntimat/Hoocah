@@ -6,6 +6,7 @@ package ru.lantimat.hoocah.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mikepenz.iconics.view.IconicsButton;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -61,13 +65,35 @@ public class ItemsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                 return new ItemViewHolder(view);
     }
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        Context context;
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+        final Context context;
 
         ((ItemViewHolder) holder).mTitle.setText(mList.get(position).getName());
         ((ItemViewHolder) holder).mPrice.setText(String.valueOf(mList.get(position).getPrice()));
         context = ((ItemViewHolder) holder).mImg.getContext();
-        Picasso.with(context).load( mList.get(position).getImgUrl()).into(((ItemViewHolder) holder).mImg);
+            Picasso.with(context)
+                    .load(mList.get(position).getImgUrl())
+                    .networkPolicy(NetworkPolicy.OFFLINE)
+                    .into(((ItemViewHolder) holder).mImg, new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onError() {
+                            // Try again online if cache failed
+                            Picasso.with(context)
+                                    .load(mList.get(position).getImgUrl())
+                                    .into(((ItemViewHolder) holder).mImg);
+                        }
+                    });
+
+        /*new Picasso.Builder(context)
+                .downloader(new OkHttpDownloader(context, Integer.MAX_VALUE))
+                .build()
+                .load(mList.get(position).getImgUrl())
+                .into(((ItemViewHolder) holder).mImg);*/
 
         ((ItemViewHolder) holder).btnDots.setOnClickListener(new View.OnClickListener() {
             @Override

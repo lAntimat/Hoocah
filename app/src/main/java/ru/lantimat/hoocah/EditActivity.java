@@ -1,6 +1,7 @@
 package ru.lantimat.hoocah;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,6 +15,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.materialize.color.Material;
+
 import ru.lantimat.hoocah.models.ItemModel;
 
 public class EditActivity extends AppCompatActivity {
@@ -22,8 +27,21 @@ public class EditActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(new IconicsDrawable(this)
+                .icon(GoogleMaterial.Icon.gmd_arrow_back)
+                .color(Color.WHITE)
+                .sizeDp(16));
+        toolbar.setTitleTextColor(Material.White._1000.getAsColor());
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         Fragment fragment;
         fragment = AddGoodsFragment.newInstance("");

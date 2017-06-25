@@ -12,6 +12,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -50,11 +53,32 @@ public class GoodsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         return new GoodsViewHolder(view);
     }
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        Context context;
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+            final Context context;
             ((GoodsViewHolder) holder).mTitle.setText(mList.get(position).getName());
             context = ((GoodsViewHolder) holder).mImg.getContext();
-            Picasso.with(context).load(mList.get(position).getImgUrl()).into(((GoodsViewHolder) holder).mImg);
+            Picasso.with(context)
+                    .load(mList.get(position).getImgUrl())
+                    .networkPolicy(NetworkPolicy.OFFLINE)
+                    .into(((GoodsViewHolder) holder).mImg, new Callback() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onError() {
+                // Try again online if cache failed
+                Picasso.with(context)
+                        .load(mList.get(position).getImgUrl())
+                        .into(((GoodsViewHolder) holder).mImg);
+            }
+        });
+        /*new Picasso.Builder(context)
+                .downloader(new OkHttpDownloader(context, Integer.MAX_VALUE))
+                .build()
+                .load(mList.get(position).getImgUrl())
+                .into(((GoodsViewHolder) holder).mImg);*/
     }
     @Override
     public int getItemCount() {

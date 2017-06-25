@@ -2,15 +2,18 @@ package ru.lantimat.hoocah;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +28,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.materialize.color.Material;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -151,6 +158,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
         // Inflate the layout for this fragment
 
         View view = inflater.inflate(R.layout.fragment_add_goods, container, false);
+
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
 
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
@@ -193,6 +201,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
 
                 GoodsModel goodsModel = new GoodsModel(edName.getText().toString(), edUrl.getText().toString(), null);
                 mDatabaseGoodsReference.child(Constants.GOODS_MODEL).child(String.valueOf(goodsCount)).setValue(goodsModel);
+                Picasso.with(getActivity()).invalidate(edUrl.getText().toString());
             }
         });
         dialogBuilder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
@@ -232,6 +241,8 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
                 goodsModel.setName(edName.getText().toString());
                 goodsModel.setImgUrl(edUrl.getText().toString());
                 mDatabaseGoodsReference.child(Constants.GOODS_MODEL).child(String.valueOf(position)).setValue(goodsModel);
+                Picasso.with(getActivity()).invalidate(edUrl.getText().toString());
+
             }
         });
         dialogBuilder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
@@ -248,7 +259,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
         final View dialogView = inflater.inflate(R.layout.dialog_add_items, null);
         dialogBuilder.setView(dialogView);
 
-        final EditText edId = (EditText) dialogView.findViewById(R.id.edId);
+        //final EditText edId = (EditText) dialogView.findViewById(R.id.edId);
         final EditText edName = (EditText) dialogView.findViewById(R.id.edName);
         final EditText edDescription = (EditText) dialogView.findViewById(R.id.edDescription);
         final EditText edUrl = (EditText) dialogView.findViewById(R.id.edUrl);
@@ -257,10 +268,10 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
         dialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
 
-                if(TextUtils.isEmpty(edId.getText())) {
+                /*if(TextUtils.isEmpty(edId.getText())) {
                     Toast.makeText(getContext(), "Введите Id", Toast.LENGTH_SHORT).show();
                     return;
-                }
+                }*/
 
                 if(TextUtils.isEmpty(edName.getText())) {
                     Toast.makeText(getContext(), "Введите имя", Toast.LENGTH_SHORT).show();
@@ -268,13 +279,11 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
                 }
 
                 if(TextUtils.isEmpty(edDescription.getText())) {
-                    Toast.makeText(getContext(), "Введите описание", Toast.LENGTH_SHORT).show();
-                    return;
+                    edDescription.setText("");
                 }
 
                 if(TextUtils.isEmpty(edUrl.getText())) {
-                    Toast.makeText(getContext(), "Введите url", Toast.LENGTH_SHORT).show();
-                    return;
+                    edUrl.setText("url");
                 }
 
                 if(TextUtils.isEmpty(edPrice.getText())) {
@@ -284,7 +293,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
 
 
                 GoodsModel goodsModel = arGoods.get(goodsPosition);
-                ItemModel itemModel = new ItemModel(Integer.parseInt(edId.getText().toString()), edName.getText().toString(),edDescription.getText().toString(), edUrl.getText().toString(), Integer.parseInt(edPrice.getText().toString()), null);
+                ItemModel itemModel = new ItemModel(1, edName.getText().toString(),edDescription.getText().toString(), edUrl.getText().toString(), Integer.parseInt(edPrice.getText().toString()), null);
                 /*ArrayList<ItemModel> arItems1 = new ArrayList<>();
                 if(goodsModel.getItemModels()!=null) {
                     arItems1 = goodsModel.getItemModels();
@@ -292,6 +301,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
                 } else arItems1.add(itemModel);*/
                 arItems.add(itemModel);
                 mDatabaseGoodsReference.child(Constants.GOODS_MODEL).child(String.valueOf(goodsPosition)).child(Constants.ITEMS_MODEL).setValue(arItems);
+                Picasso.with(getActivity()).invalidate(edUrl.getText().toString());
 
             }
         });
@@ -333,6 +343,8 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
                 } else arItems.set(position, itemModel);*/
                 arItems.set(position, itemModel);
                 mDatabaseGoodsReference.child(Constants.GOODS_MODEL).child(String.valueOf(goodsPosition)).child(Constants.ITEMS_MODEL).setValue(arItems);
+                Picasso.with(getActivity()).invalidate(edUrl.getText().toString());
+
             }
         });
         dialogBuilder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {

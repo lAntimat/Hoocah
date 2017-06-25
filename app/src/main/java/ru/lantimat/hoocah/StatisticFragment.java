@@ -113,6 +113,8 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
     Calendar dateAndTime=Calendar.getInstance();
     DateTime now = DateTime.now();
 
+    int workStartTime = 7*60*60; //00:00 - 7:00 = 17:00
+
     public StatisticFragment() {
         // Required empty public constructor
     }
@@ -148,7 +150,7 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
 
         getProfit();
         DateTime now = DateTime.now();
-        getProfitWeek(now.getDayOfWeek()+1, "Выручка за неделю");
+        getProfitWeek(now.getDayOfWeek(), "Выручка за неделю");
         setHasOptionsMenu(true);
 
     }
@@ -157,6 +159,7 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
 
         DateTime now = DateTime.now();
         DateTime lastWeek = new DateTime();
+        DateTime dateTime = new DateTime();
         String date;
         date = lastWeek.getYear() + "-" + lastWeek.getMonthOfYear() + "-" + lastWeek.getDayOfMonth();
         Log.d(TAG, "date" + date);
@@ -164,8 +167,12 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
 
         Query myTopPostsQuery = null;
         try {
+            if(dateTime.getHourOfDay()>17) {
+                myTopPostsQuery = mDatabaseReference.child(Constants.CLOSE_ORDER)
+                        .orderByChild("unixTimeClose").startAt(getStartOfDayInMillis(date) + 17*60*60);
+            } else
             myTopPostsQuery = mDatabaseReference.child(Constants.CLOSE_ORDER)
-                        .orderByChild("unixTimeClose").startAt(getStartOfDayInMillis(date) - 6*60*60);
+                        .orderByChild("unixTimeClose").startAt(getStartOfDayInMillis(date) - workStartTime);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -202,7 +209,7 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         Query myTopPostsQuery = null;
         try {
             myTopPostsQuery = mDatabaseReference.child(Constants.CLOSE_ORDER)
-                    .orderByChild("unixTimeClose").startAt(getStartOfDayInMillis(date));
+                    .orderByChild("unixTimeClose").startAt(getStartOfDayInMillis(date) - workStartTime);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -210,7 +217,7 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         profitWeek = 0;
         sumForDay = 0;
         try {
-            timeToCompare = getStartOfDayInMillis(date) - 6*60*60; //Корректировка под время работы заведения
+            timeToCompare = getStartOfDayInMillis(date) - workStartTime; //Корректировка под время работы заведения
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -588,12 +595,12 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         //noinspection SimplifiableIfStatement
         if (id == R.id.statistik_for_week) {
             DateTime now = DateTime.now();
-            getProfitWeek(now.getDayOfWeek()+1, "Выручка за неделю");
+            getProfitWeek(now.getDayOfWeek()-2, "Выручка за неделю");
             return true;
         }
         if (id == R.id.statistik_for_month) {
             DateTime now = DateTime.now();
-            getProfitWeek(now.getDayOfMonth()+1, "Выручка за месяц");
+            getProfitWeek(now.getDayOfMonth()-2, "Выручка за месяц");
             return true;
         }
         if (id == R.id.statistik_for_period) {
