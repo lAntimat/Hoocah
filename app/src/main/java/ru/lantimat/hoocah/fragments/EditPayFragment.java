@@ -1,4 +1,4 @@
-package ru.lantimat.hoocah;
+package ru.lantimat.hoocah.fragments;
 
 import android.app.Activity;
 import android.content.Context;
@@ -26,6 +26,7 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 
 import java.lang.reflect.Method;
 
+import ru.lantimat.hoocah.R;
 import ru.lantimat.hoocah.Utils.Constants;
 import ru.lantimat.hoocah.models.ActiveOrder;
 import ru.lantimat.hoocah.models.CloseOrder;

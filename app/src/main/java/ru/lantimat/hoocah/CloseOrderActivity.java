@@ -12,7 +12,7 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.materialize.color.Material;
 
-import ru.lantimat.hoocah.models.CloseOrder;
+import ru.lantimat.hoocah.fragments.CloseOrdersFragment;
 
 public class CloseOrderActivity extends AppCompatActivity {
 

@@ -6,6 +6,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import ru.lantimat.hoocah.fragments.EditPayFragment;
+import ru.lantimat.hoocah.fragments.NumKeyboardFragment;
+
 public class PayActivity extends AppCompatActivity implements NumKeyboardFragment.OnFragmentInteractionListener {
 
     NumKeyboardFragment fragmentA;

@@ -1,17 +1,14 @@
-package ru.lantimat.hoocah;
+package ru.lantimat.hoocah.fragments;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,14 +16,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -34,23 +27,16 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.formatter.IFillFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 import org.joda.time.DateTime;
@@ -60,22 +46,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import ru.lantimat.hoocah.OnBackPressedListener;
+import ru.lantimat.hoocah.R;
 import ru.lantimat.hoocah.Utils.Constants;
 import ru.lantimat.hoocah.Utils.DayAxisValueFormatter;
 import ru.lantimat.hoocah.Utils.ItemClickSupport;
 import ru.lantimat.hoocah.Utils.MyAxisValueFormatter;
 import ru.lantimat.hoocah.Utils.XYMarkerView;
 import ru.lantimat.hoocah.adapters.GoodsRecyclerAdapter;
-import ru.lantimat.hoocah.adapters.ItemsRecyclerAdapter;
-import ru.lantimat.hoocah.adapters.TasteRecyclerAdapter;
-import ru.lantimat.hoocah.models.ActiveItemModel;
-import ru.lantimat.hoocah.models.ActiveOrder;
 import ru.lantimat.hoocah.models.CloseOrder;
 import ru.lantimat.hoocah.models.GoodsModel;
-import ru.lantimat.hoocah.models.ItemModel;
-import ru.lantimat.hoocah.models.TableModel;
-
-import static android.content.ContentValues.TAG;
 
 
 public class StatisticFragment extends Fragment implements OnBackPressedListener, OnChartValueSelectedListener {
@@ -83,6 +63,8 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String TAG = "StatisticFragment";
+    private static int HOURS_BEFORE_ZERO = 7*60*60; //00:00 - 7:00 = 17:00
+    private static int HOURS_AFTER_ZERO = 5*60*60; //00:00 + 5:00 = 05:00
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -100,8 +82,6 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
     float profitDay = 0;
     float profitWeek = 0;
     float sumForDay = 0;
-    long closeTime;
-    int dayCount = 7;
     long timeToCompare;
     long lastTimeToCompare;
     final long oneDayUnixTime = 86400;
@@ -113,7 +93,7 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
     Calendar dateAndTime=Calendar.getInstance();
     DateTime now = DateTime.now();
 
-    int workStartTime = 7*60*60; //00:00 - 7:00 = 17:00
+    long workStartTime;
 
     public StatisticFragment() {
         // Required empty public constructor
@@ -145,13 +125,13 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         // Write a message to the database
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
+
         refListener();
-
-
         getProfit();
         DateTime now = DateTime.now();
         getProfitWeek(now.getDayOfWeek(), "Выручка за неделю");
         setHasOptionsMenu(true);
+        Log.d(TAG, "День недели " + now.getDayOfWeek());
 
     }
 
@@ -201,26 +181,26 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         arCloseTime.clear();
         arTotalPrices.clear();
         now = DateTime.now();
+
         DateTime lastWeek = new DateTime().minusDays(dayCount);
         String date;
         date = lastWeek.getYear() + "-" + lastWeek.getMonthOfYear() + "-" + lastWeek.getDayOfMonth();
         Log.d(TAG, "date" + date);
-
-        Query myTopPostsQuery = null;
         try {
-            myTopPostsQuery = mDatabaseReference.child(Constants.CLOSE_ORDER)
-                    .orderByChild("unixTimeClose").startAt(getStartOfDayInMillis(date) - workStartTime);
+            workStartTime = getStartOfDayInMillis(date) - HOURS_BEFORE_ZERO;
         } catch (ParseException e) {
             e.printStackTrace();
+        }
+
+        Query myTopPostsQuery = null;
+        {
+            myTopPostsQuery = mDatabaseReference.child(Constants.CLOSE_ORDER)
+                    .orderByChild("unixTimeClose").startAt(workStartTime);
         }
 
         profitWeek = 0;
         sumForDay = 0;
-        try {
-            timeToCompare = getStartOfDayInMillis(date) - workStartTime; //Корректировка под время работы заведения
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+            timeToCompare = workStartTime;
 
         long openTime;
         myTopPostsQuery.addValueEventListener(new ValueEventListener() {
@@ -236,7 +216,7 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
                 tvWeek.setText(str + " " + profitWeek);
 
 
-                while (arCloseTime.get(0)  > timeToCompare + oneDayUnixTime) {
+                while (arCloseTime.get(0)  > timeToCompare) {
                     timeToCompare = timeToCompare + oneDayUnixTime;
                     arProfit.add(sumForDay);
                 }
@@ -284,8 +264,8 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         profitWeek = 0;
         sumForDay = 0;
         try {
-            timeToCompare = getStartOfDayInMillis(firstDayDataStr) - 6*60*60; //Корректировка под время работы заведения
-            lastTimeToCompare = getStartOfDayInMillis(lastDayDataStr) - 6*60*60; //Корректировка под время работы заведения
+            timeToCompare = getStartOfDayInMillis(firstDayDataStr) - HOURS_BEFORE_ZERO; //Корректировка под время работы заведения
+            lastTimeToCompare = getStartOfDayInMillis(lastDayDataStr) - HOURS_BEFORE_ZERO; //Корректировка под время работы заведения
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -595,12 +575,12 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         //noinspection SimplifiableIfStatement
         if (id == R.id.statistik_for_week) {
             DateTime now = DateTime.now();
-            getProfitWeek(now.getDayOfWeek()-2, "Выручка за неделю");
+            getProfitWeek(now.getDayOfWeek(), "Выручка за неделю");
             return true;
         }
         if (id == R.id.statistik_for_month) {
             DateTime now = DateTime.now();
-            getProfitWeek(now.getDayOfMonth()-2, "Выручка за месяц");
+            getProfitWeek(now.getDayOfMonth(), "Выручка за месяц");
             return true;
         }
         if (id == R.id.statistik_for_period) {

@@ -13,6 +13,9 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.materialize.color.Material;
 
+import ru.lantimat.hoocah.fragments.BillFragment;
+import ru.lantimat.hoocah.fragments.GoodsFragment;
+
 public class OrderActivity extends AppCompatActivity {
 
     final static String TAG = "OrderActivity";

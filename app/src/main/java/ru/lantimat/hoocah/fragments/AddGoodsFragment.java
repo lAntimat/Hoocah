@@ -1,19 +1,16 @@
-package ru.lantimat.hoocah;
+package ru.lantimat.hoocah.fragments;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,16 +25,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.mikepenz.google_material_typeface_library.GoogleMaterial;
-import com.mikepenz.iconics.IconicsDrawable;
-import com.mikepenz.materialize.color.Material;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import ru.lantimat.hoocah.OnBackPressedListener;
+import ru.lantimat.hoocah.R;
 import ru.lantimat.hoocah.Utils.Constants;
 import ru.lantimat.hoocah.Utils.ItemClickSupport;
-import ru.lantimat.hoocah.Utils.TabletOrPhone;
 import ru.lantimat.hoocah.adapters.GoodsRecyclerAdapter;
 import ru.lantimat.hoocah.adapters.ItemsRecyclerAdapter;
 import ru.lantimat.hoocah.adapters.TasteRecyclerAdapter;
@@ -45,8 +40,6 @@ import ru.lantimat.hoocah.models.ActiveItemModel;
 import ru.lantimat.hoocah.models.ActiveOrder;
 import ru.lantimat.hoocah.models.GoodsModel;
 import ru.lantimat.hoocah.models.ItemModel;
-
-import static android.content.ContentValues.TAG;
 
 
 /**
@@ -195,7 +188,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
                 }
 
                 if(TextUtils.isEmpty(edUrl.getText())) {
-                    Toast.makeText(getContext(), "Введите имя", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Введите url", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -233,7 +226,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
                 }
 
                 if(TextUtils.isEmpty(edUrl.getText())) {
-                    Toast.makeText(getContext(), "Введите имя", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Введите url", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -319,13 +312,12 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
         final View dialogView = inflater.inflate(R.layout.dialog_add_items, null);
         dialogBuilder.setView(dialogView);
 
-        final EditText edId = (EditText) dialogView.findViewById(R.id.edId);
         final EditText edName = (EditText) dialogView.findViewById(R.id.edName);
         final EditText edDescription = (EditText) dialogView.findViewById(R.id.edDescription);
         final EditText edUrl = (EditText) dialogView.findViewById(R.id.edUrl);
         final EditText edPrice = (EditText) dialogView.findViewById(R.id.edPrice);
 
-        edId.setText(String.valueOf(arGoods.get(goodsPosition).getItemModels().get(position).getId()));
+
         edName.setText(arGoods.get(goodsPosition).getItemModels().get(position).getName());
         edDescription.setText(arGoods.get(goodsPosition).getItemModels().get(position).getDesription());
         edUrl.setText(arGoods.get(goodsPosition).getItemModels().get(position).getImgUrl());
@@ -334,8 +326,27 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
 
         dialogBuilder.setPositiveButton("Изменить", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
+
+                if(TextUtils.isEmpty(edName.getText())) {
+                    Toast.makeText(getContext(), "Введите имя", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(TextUtils.isEmpty(edDescription.getText())) {
+                    edDescription.setText("");
+                }
+
+                if(TextUtils.isEmpty(edUrl.getText())) {
+                    edUrl.setText("url");
+                }
+
+                if(TextUtils.isEmpty(edPrice.getText())) {
+                    Toast.makeText(getContext(), "Введите цену", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 GoodsModel goodsModel = arGoods.get(goodsPosition);
-                ItemModel itemModel = new ItemModel(Integer.parseInt(edId.getText().toString()), edName.getText().toString(),edDescription.getText().toString(), edUrl.getText().toString(), Integer.parseInt(edPrice.getText().toString()), null);
+                ItemModel itemModel = new ItemModel(1, edName.getText().toString(),edDescription.getText().toString(), edUrl.getText().toString(), Integer.parseInt(edPrice.getText().toString()), null);
                 /*ArrayList<ItemModel> arItems = new ArrayList<>();
                 if(goodsModel.getItemModels()!=null) {
                     arItems = goodsModel.getItemModels();

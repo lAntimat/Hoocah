@@ -49,6 +49,7 @@
     <string name="fullName">Свое имя назови, юный падаван</string>
     <string name="passport">Пасспортные данные</string>
     <string name="title_activity_edit">Редактирование</string>
+    <string name="title_activity_close_orders">Закрытые счета</string>
     <string name="title_activity_test">Статистика</string>
     <string name="title_total_price">Общая стоиомсть </string>
     <string name="title_tables_info">Столик №</string>

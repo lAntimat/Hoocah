@@ -1,4 +1,4 @@
-package ru.lantimat.hoocah;
+package ru.lantimat.hoocah.fragments;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,8 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.firebase.database.DataSnapshot;
@@ -21,6 +19,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import ru.lantimat.hoocah.OrderActivity;
+import ru.lantimat.hoocah.PayActivity;
+import ru.lantimat.hoocah.R;
 import ru.lantimat.hoocah.Utils.Constants;
 import ru.lantimat.hoocah.Utils.ItemClickSupport;
 import ru.lantimat.hoocah.adapters.OpenOrderRecyclerAdapter;
@@ -66,6 +67,8 @@ public class OpenOrdersFragment extends Fragment {
 
         mDatabaseActiveItemReference = FirebaseDatabase.getInstance().getReference(Constants.ACTIVE_ITEM);
         activeItemListener();
+
+        mDatabaseActiveItemReference.keepSynced(true);
         super.onCreate(savedInstanceState);
     }
 

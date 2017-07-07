@@ -51,7 +51,9 @@
             android:name=".UpdateProfileActivity"
             android:label="@string/title_activity_update"
             android:theme="@style/AppTheme" />
-        <activity android:name=".CloseOrderActivity"></activity>
+        <activity android:name=".CloseOrderActivity"
+            android:label="@string/title_activity_close_orders"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>
