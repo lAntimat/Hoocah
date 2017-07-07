@@ -29,8 +29,8 @@
             android:label="@string/title_activity_edit"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".TestActivity"
-            android:label="@string/title_activity_test"
+            android:name=".StatisticActivity"
+            android:label="@string/title_activity_statistic"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".PayActivity"

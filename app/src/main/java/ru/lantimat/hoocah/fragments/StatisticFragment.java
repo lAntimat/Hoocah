@@ -1,9 +1,9 @@
 package ru.lantimat.hoocah.fragments;
-
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -16,9 +16,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
 import android.widget.TextView;
 
+import com.borax12.materialdaterangepicker.date.DatePickerDialog;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -40,6 +40,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -58,7 +59,7 @@ import ru.lantimat.hoocah.models.CloseOrder;
 import ru.lantimat.hoocah.models.GoodsModel;
 
 
-public class StatisticFragment extends Fragment implements OnBackPressedListener, OnChartValueSelectedListener {
+public class StatisticFragment extends Fragment implements OnBackPressedListener, OnChartValueSelectedListener, DatePickerDialog.OnDateSetListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -68,7 +69,8 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
 
     // TODO: Rename and change types of parameters
     private String mParam1;
-
+    Context context;
+    FragmentActivity fragmentActivity;
     GoodsRecyclerAdapter goodsRecyclerAdapter;
     RecyclerView recyclerView;
     ArrayList<GoodsModel> arrayList;
@@ -89,6 +91,7 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
     ArrayList<Long> arCloseTime = new ArrayList<>();
     ArrayList<Float> arTotalPrices = new ArrayList<>();
     ArrayList<Float> arProfit = new ArrayList<>();
+    ArrayList<CloseOrder> arCloseOrder = new ArrayList<>();
 
     Calendar dateAndTime=Calendar.getInstance();
     DateTime now = DateTime.now();
@@ -149,10 +152,10 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         try {
             if(dateTime.getHourOfDay()>17) {
                 myTopPostsQuery = mDatabaseReference.child(Constants.CLOSE_ORDER)
-                        .orderByChild("unixTimeClose").startAt(getStartOfDayInMillis(date) + 17*60*60);
+                        .orderByChild("unixTimeClose").startAt(getStartOfDayInMillis(date) - HOURS_BEFORE_ZERO);
             } else
             myTopPostsQuery = mDatabaseReference.child(Constants.CLOSE_ORDER)
-                        .orderByChild("unixTimeClose").startAt(getStartOfDayInMillis(date) - workStartTime);
+                        .orderByChild("unixTimeClose").startAt(getStartOfDayInMillis(date) - HOURS_AFTER_ZERO);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -177,62 +180,45 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
     }
     private void getProfitWeek(final int dayCount, final String str) {
 
+        arCloseOrder.clear();
         arProfit.clear();
-        arCloseTime.clear();
-        arTotalPrices.clear();
         now = DateTime.now();
+        DateTime dateTime = new DateTime();
 
         DateTime lastWeek = new DateTime().minusDays(dayCount);
         String date;
         date = lastWeek.getYear() + "-" + lastWeek.getMonthOfYear() + "-" + lastWeek.getDayOfMonth();
         Log.d(TAG, "date" + date);
         try {
-            workStartTime = getStartOfDayInMillis(date) - HOURS_BEFORE_ZERO;
+            workStartTime = getStartOfDayInMillis(date) + HOURS_AFTER_ZERO;
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
         Query myTopPostsQuery = null;
-        {
-            myTopPostsQuery = mDatabaseReference.child(Constants.CLOSE_ORDER)
-                    .orderByChild("unixTimeClose").startAt(workStartTime);
-        }
+                myTopPostsQuery = mDatabaseReference.child(Constants.CLOSE_ORDER)
+                        .orderByChild("unixTimeClose").startAt(workStartTime);
 
         profitWeek = 0;
         sumForDay = 0;
             timeToCompare = workStartTime;
 
-        long openTime;
         myTopPostsQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
-                    String date;
                     profitWeek+= postSnapshot.getValue(CloseOrder.class).getTotalPrice();
-                    arCloseTime.add(postSnapshot.getValue(CloseOrder.class).getUnixTimeClose());
-                    arTotalPrices.add(postSnapshot.getValue(CloseOrder.class).getTotalPrice());
+                    arCloseOrder.add(postSnapshot.getValue(CloseOrder.class));
                     //Log.d(TAG, "Время закрытия" + closeTime);
                 }
                 tvWeek.setText(str + " " + profitWeek);
 
-
-                while (arCloseTime.get(0)  > timeToCompare) {
-                    timeToCompare = timeToCompare + oneDayUnixTime;
-                    arProfit.add(sumForDay);
+                for(int i = 0; i <= dayCount; i++) {
+                    arProfit.add((float) getPriceForDayFromArray(arCloseOrder, timeToCompare, timeToCompare+oneDayUnixTime));
+                    timeToCompare += oneDayUnixTime;
                 }
-                for(int i = 0; i < arTotalPrices.size(); i++) {
-
-                    if (arCloseTime.get(i) > timeToCompare && arCloseTime.get(i) < (timeToCompare + oneDayUnixTime)) {
-                        sumForDay = sumForDay + arTotalPrices.get(i);
-                    } else {
-                        arProfit.add(sumForDay);
-                        sumForDay = 0;
-                        timeToCompare = timeToCompare + oneDayUnixTime;
-                        sumForDay =+ arTotalPrices.get(i);
-                    }
-                }
-                arProfit.add(sumForDay);
                 setData(arProfit, now.getDayOfYear()-dayCount);
+                //Log.d(TAG, "День от начала года " + (now.getDayOfYear()-dayCount));
                 mChart.invalidate();
             }
 
@@ -242,66 +228,59 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
             }
         });
     }
-    private void getProfitForPeriod(final DateTime firstDayDate, DateTime lastDayDate) {
 
+    private int getPriceForDayFromArray(ArrayList<CloseOrder> ar, long startTime, long endTime) {
+        int sum = 0;
+        for (int i = 0; i < ar.size(); i++) {
+            if(ar.get(i).getUnixTimeClose() > startTime && ar.get(i).getUnixTimeClose() < endTime){
+                sum += ar.get(i).getTotalPrice();
+            }
+        }
+        return sum;
+    }
+
+    private void getProfitForPeriod(final DateTime firstDayDate, final DateTime lastDayDate) {
+
+
+        arCloseOrder.clear();
         arProfit.clear();
-        arCloseTime.clear();
-        arTotalPrices.clear();
-        final String firstDayDataStr;
-        final String lastDayDataStr;
-        firstDayDataStr = firstDayDate.getYear() + "-" + firstDayDate.getMonthOfYear() + "-" + firstDayDate.getDayOfMonth();
-        lastDayDataStr = lastDayDate.getYear() + "-" + lastDayDate.getMonthOfYear() + "-" + lastDayDate.getDayOfMonth();
-        Log.d(TAG, "date" + firstDayDataStr);
+        final int dayCount = lastDayDate.getDayOfYear() - firstDayDate.getDayOfYear();
 
-        Query myTopPostsQuery = null;
+
+        String date;
+        date = firstDayDate.getYear() + "-" + firstDayDate.getMonthOfYear() + "-" + firstDayDate.getDayOfMonth();
+
         try {
-            myTopPostsQuery = mDatabaseReference.child(Constants.CLOSE_ORDER)
-                    .orderByChild("unixTimeClose").startAt(getStartOfDayInMillis(firstDayDataStr));
+            workStartTime = getStartOfDayInMillis(date) + HOURS_AFTER_ZERO;
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
+        Query myTopPostsQuery = null;
+        myTopPostsQuery = mDatabaseReference.child(Constants.CLOSE_ORDER)
+                .orderByChild("unixTimeClose").startAt(workStartTime).endAt(workStartTime + oneDayUnixTime*dayCount);
 
         profitWeek = 0;
         sumForDay = 0;
-        try {
-            timeToCompare = getStartOfDayInMillis(firstDayDataStr) - HOURS_BEFORE_ZERO; //Корректировка под время работы заведения
-            lastTimeToCompare = getStartOfDayInMillis(lastDayDataStr) - HOURS_BEFORE_ZERO; //Корректировка под время работы заведения
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        timeToCompare = workStartTime;
 
-        long openTime;
         myTopPostsQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
-                    String date;
                     profitWeek+= postSnapshot.getValue(CloseOrder.class).getTotalPrice();
-                    arCloseTime.add(postSnapshot.getValue(CloseOrder.class).getUnixTimeClose());
-                    arTotalPrices.add(postSnapshot.getValue(CloseOrder.class).getTotalPrice());
+                    arCloseOrder.add(postSnapshot.getValue(CloseOrder.class));
                     //Log.d(TAG, "Время закрытия" + closeTime);
                 }
-                tvWeek.setText(firstDayDataStr + " " + "Выручка за период с " + firstDayDataStr + " по " + lastDayDataStr);
+                tvWeek.setText("Выручка за период с " + firstDayDate.toString(DateTimeFormat.longDate())
+                        + " по " + lastDayDate.toString(DateTimeFormat.longDate()) + "\n" + profitWeek + " рублей");
 
-
-                while (arCloseTime.get(0)  > timeToCompare + oneDayUnixTime) {
-                    timeToCompare = timeToCompare + oneDayUnixTime;
-                    arProfit.add(sumForDay);
+                for(int i = 0; i <= dayCount; i++) {
+                    arProfit.add((float) getPriceForDayFromArray(arCloseOrder, timeToCompare, timeToCompare+oneDayUnixTime));
+                    timeToCompare += oneDayUnixTime;
                 }
-                for(int i = 0; i < arTotalPrices.size(); i++) {
-
-                    if (arCloseTime.get(i) > timeToCompare && arCloseTime.get(i) < (timeToCompare + oneDayUnixTime)) {
-                        sumForDay = sumForDay + arTotalPrices.get(i);
-                    } else {
-                        if(lastTimeToCompare<arCloseTime.get(i)) break;
-                        arProfit.add(sumForDay);
-                        sumForDay = 0;
-                        timeToCompare = timeToCompare + oneDayUnixTime;
-                        sumForDay =+ arTotalPrices.get(i);
-                    }
-                }
-                arProfit.add(sumForDay);
-                setData(arProfit, firstDayDate.getDayOfYear());
+                setData(arProfit, firstDayDate.getDayOfYear()-1);
+                //Log.d(TAG, "День от начала года " + (now.getDayOfYear()-dayCount));
                 mChart.invalidate();
             }
 
@@ -397,20 +376,11 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
     private void setData(ArrayList<Float> ar, int startDay) {
 
         Calendar calendar = Calendar.getInstance();
-        int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
-        float start = startDay;
+        float start = startDay+2;
 
         ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
 
         for (int i = (int) start, j = 0; i < ar.size()+start; i++, j++) {
-            //float mult = (range + 1);
-            //float val = (float) (Math.random() * mult);
-
-            //if (Math.random() * 100 < 25) {
-            //    yVals1.add(new BarEntry(i, val, getResources().getDrawable(R.drawable.star)));
-            //} else {
-            //  yVals1.add(new BarEntry(i, val));
-            //}
             yVals1.add(new BarEntry(i, ar.get(j)));
         }
 
@@ -490,6 +460,7 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
 
     @Override
     public void onAttach(Context context) {
+        fragmentActivity = (FragmentActivity) context;
         super.onAttach(context);
     }
 
@@ -531,33 +502,16 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
 
     }
 
-    // отображаем диалоговое окно для выбора даты
-    public void setDate(View v) {
-        new DatePickerDialog(getActivity(), d,
-                dateAndTime.get(Calendar.YEAR),
-                dateAndTime.get(Calendar.MONTH),
-                dateAndTime.get(Calendar.DAY_OF_MONTH))
-                .show();
+    public void initDatePicker() {
+        Calendar now = Calendar.getInstance();
+        DatePickerDialog dpd = DatePickerDialog.newInstance(
+                this,
+                now.get(Calendar.YEAR),
+                now.get(Calendar.MONTH),
+                now.get(Calendar.DAY_OF_MONTH)
+        );
+        dpd.show(getActivity().getFragmentManager(), "Datepickerdialog");
     }
-
-
-
-
-    // установка обработчика выбора даты
-    DatePickerDialog.OnDateSetListener d=new DatePickerDialog.OnDateSetListener() {
-        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            dateAndTime.set(Calendar.YEAR, year);
-            dateAndTime.set(Calendar.MONTH, monthOfYear);
-            dateAndTime.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-            DateTime date = new DateTime();
-            date.withYear(Calendar.YEAR);
-            date.withMonthOfYear(Calendar.MONTH);
-            date.withDayOfMonth(Calendar.DAY_OF_MONTH);
-            //getProfitForPeriod();
-
-        }
-    };
-
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -584,11 +538,18 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
             return true;
         }
         if (id == R.id.statistik_for_period) {
-            DateTime now = DateTime.now();
-            getProfitForPeriod(now.minusDays(3), now.minusDays(1));
+            initDatePicker();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth, int yearEnd, int monthOfYearEnd, int dayOfMonthEnd) {
+        DateTime date = DateTime.now().withDate(year, monthOfYear+1, dayOfMonth);
+        DateTime dateEnd = DateTime.now().withDate(yearEnd, monthOfYearEnd+1, dayOfMonthEnd);
+        getProfitForPeriod(date, dateEnd);
+
     }
 }

@@ -49,6 +49,8 @@ dependencies {
     compile 'net.danlew:android.joda:2.9.9'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.0.2'
+
+    compile 'com.borax12.materialdaterangepicker:library:1.9'
     testCompile 'junit:junit:4.12'
 }
 

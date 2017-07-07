@@ -9,7 +9,7 @@ import android.view.Menu;
 
 import ru.lantimat.hoocah.fragments.StatisticFragment;
 
-public class TestActivity extends AppCompatActivity {
+public class StatisticActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

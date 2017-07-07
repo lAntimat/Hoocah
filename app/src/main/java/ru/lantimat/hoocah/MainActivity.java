@@ -267,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
                                 intent = new Intent(getApplication(), EditActivity.class);
                                 break;
                             case 5:
-                                intent = new Intent(getApplication(), TestActivity.class);
+                                intent = new Intent(getApplication(), StatisticActivity.class);
 
                                 break;
                         }
