@@ -32,6 +32,8 @@
     <string name="hint_item_id">Код товара</string>
     <string name="hint_item_description">Описание товара</string>
     <string name="hint_item_price">Цена</string>
+    <string name="hint_reservation_time">Время бронирования</string>
+    <string name="hint_reservation_name">Введите имя</string>
     <string name="btn_login">Войти</string>
     <string name="btn_link_to_register">Еще нет аккаунта? Зарегистрируйтесь сейчас!</string>
     <string name="btn_link_to_login">У меня уже есть аккаунт. Войти</string>
@@ -55,6 +57,7 @@
     <string name="title_tables_info">Столик №</string>
     <string name="title_order_active">Активный</string>
     <string name="title_order_inactive">Ожидает оплаты</string>
+    <string name="title_order_reserv">Забронировано</string>
 
     <string name="dialogs.open_orders"> </string>
 

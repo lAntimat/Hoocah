@@ -19,7 +19,7 @@
 
         <TextView
             android:id="@+id/tvId"
-            style="@android:style/TextAppearance.Material.Headline"
+            style="@android:style/TextAppearance.Material.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="false"
@@ -41,6 +41,10 @@
             style="@android:style/TextAppearance.Material.Body1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/tvId"
             android:layout_weight="1"
             android:ellipsize="end"
             android:gravity="right"
@@ -50,11 +54,7 @@
             card_view:layout_constraintHorizontal_bias="0.481"
             card_view:layout_constraintLeft_toLeftOf="parent"
             card_view:layout_constraintRight_toRightOf="parent"
-            card_view:layout_constraintTop_toBottomOf="@+id/imageView"
-            android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/tvId"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            card_view:layout_constraintTop_toBottomOf="@+id/imageView" />
 
         <LinearLayout
             android:id="@+id/lr1"
@@ -68,7 +68,7 @@
 
             <TextView
                 android:id="@+id/tvStatus"
-                style="@android:style/TextAppearance.Material.Body1"
+                style="@android:style/TextAppearance.Material.Medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"

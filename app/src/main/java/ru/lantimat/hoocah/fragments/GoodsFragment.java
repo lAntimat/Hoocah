@@ -309,10 +309,19 @@ public class GoodsFragment extends Fragment implements OnBackPressedListener {
                 if(dataSnapshot.child(mParam1).exists()) {
                     ActiveOrder activeOrder = dataSnapshot.child(mParam1).getValue(ActiveOrder.class);
                     if (activeOrder != null) {
-                        if(activeOrder.getId()==null) {
+                        if(activeOrder.getId() == null) { //Если открытого счета нету, то создаем
                             activeOrder = new ActiveOrder(mParam1, unixTime, true, activeItemPrice, arActiveItem); //Заказ открыт
                             mDatabaseActiveItemReference.child(mParam1).setValue(activeOrder);
                             mDatabaseTablesReference.child(mParam1).setValue(new TableModel(Integer.parseInt(mParam1), Integer.parseInt(activeOrder.getId()), false));
+                        } else if (activeOrder.isReservation() && activeOrder.getArActiveItemModel()==null) { //Если столик был зарезервирован, то просто обновляем
+
+                            activeOrder.setUnixTime(unixTime);
+                            activeOrder.setActive(true);
+                            activeOrder.setTotalPrice(activeItemPrice);
+                            activeOrder.setArActiveItemModel(arActiveItem);
+                            mDatabaseActiveItemReference.child(mParam1).setValue(activeOrder);
+                            mDatabaseTablesReference.child(mParam1).setValue(new TableModel(Integer.parseInt(mParam1), Integer.parseInt(activeOrder.getId()), false));
+
                         }
                         if (activeOrder.getArActiveItemModel() != null)
                             arActiveItem = activeOrder.getArActiveItemModel();

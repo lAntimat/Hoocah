@@ -1,5 +1,6 @@
 package ru.lantimat.hoocah.fragments;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -16,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.borax12.materialdaterangepicker.date.DatePickerDialog;
@@ -38,6 +40,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.materialize.color.Material;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -76,6 +81,7 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
     ArrayList<GoodsModel> arrayList;
 
     TextView tvDay, tvWeek;
+    ProgressBar progressBar;
 
     private BarChart mChart;
 
@@ -128,18 +134,15 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         // Write a message to the database
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
-
         refListener();
-        getProfit();
-        DateTime now = DateTime.now();
-        getProfitWeek(now.getDayOfWeek(), "Выручка за неделю");
         setHasOptionsMenu(true);
-        Log.d(TAG, "День недели " + now.getDayOfWeek());
+        //Log.d(TAG, "День недели " + now.getDayOfWeek());
 
     }
 
     private void getProfit() {
 
+        progressBar.setVisibility(View.VISIBLE);
         DateTime now = DateTime.now();
         DateTime lastWeek = new DateTime();
         DateTime dateTime = new DateTime();
@@ -164,6 +167,7 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         myTopPostsQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                progressBar.setVisibility(View.INVISIBLE);
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
                     profitDay += postSnapshot.getValue(CloseOrder.class).getTotalPrice();
                     Log.d(TAG, "хмхм" + profitDay);
@@ -179,7 +183,7 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         });
     }
     private void getProfitWeek(final int dayCount, final String str) {
-
+        progressBar.setVisibility(View.VISIBLE);
         arCloseOrder.clear();
         arProfit.clear();
         now = DateTime.now();
@@ -219,6 +223,7 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
                 }
                 setData(arProfit, now.getDayOfYear()-dayCount);
                 //Log.d(TAG, "День от начала года " + (now.getDayOfYear()-dayCount));
+                progressBar.setVisibility(View.INVISIBLE);
                 mChart.invalidate();
             }
 
@@ -229,19 +234,10 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         });
     }
 
-    private int getPriceForDayFromArray(ArrayList<CloseOrder> ar, long startTime, long endTime) {
-        int sum = 0;
-        for (int i = 0; i < ar.size(); i++) {
-            if(ar.get(i).getUnixTimeClose() > startTime && ar.get(i).getUnixTimeClose() < endTime){
-                sum += ar.get(i).getTotalPrice();
-            }
-        }
-        return sum;
-    }
 
     private void getProfitForPeriod(final DateTime firstDayDate, final DateTime lastDayDate) {
 
-
+        progressBar.setVisibility(View.VISIBLE);
         arCloseOrder.clear();
         arProfit.clear();
         final int dayCount = lastDayDate.getDayOfYear() - firstDayDate.getDayOfYear();
@@ -281,6 +277,7 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
                 }
                 setData(arProfit, firstDayDate.getDayOfYear()-1);
                 //Log.d(TAG, "День от начала года " + (now.getDayOfYear()-dayCount));
+                progressBar.setVisibility(View.INVISIBLE);
                 mChart.invalidate();
             }
 
@@ -289,6 +286,16 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
 
             }
         });
+    }
+
+    private int getPriceForDayFromArray(ArrayList<CloseOrder> ar, long startTime, long endTime) {
+        int sum = 0;
+        for (int i = 0; i < ar.size(); i++) {
+            if(ar.get(i).getUnixTimeClose() > startTime && ar.get(i).getUnixTimeClose() < endTime){
+                sum += ar.get(i).getTotalPrice();
+            }
+        }
+        return sum;
     }
 
 
@@ -302,9 +309,36 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
+        toolbar.setNavigationIcon(new IconicsDrawable(getContext())
+                .icon(GoogleMaterial.Icon.gmd_arrow_back)
+                .color(Color.WHITE)
+                .sizeDp(16));
+        toolbar.setTitleTextColor(Material.White._1000.getAsColor());
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().finish();
+            }
+        });
+
         tvDay = (TextView) view.findViewById(R.id.tvDay);
         tvWeek = (TextView) view.findViewById(R.id.tvWeek);
+        tvDay.setText("");
+        tvWeek.setText("");
 
+        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
+
+        initChart(view);
+        getProfit();
+        DateTime now = DateTime.now();
+        getProfitWeek(now.getDayOfWeek(), "Выручка за неделю");
+
+        return view;
+    }
+
+    private void initChart(View view) {
         mChart = (BarChart) view.findViewById(R.id.chart1);
         mChart.setOnChartValueSelectedListener(this);
 
@@ -368,8 +402,6 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         XYMarkerView mv = new XYMarkerView(getContext(), xAxisFormatter);
         mv.setChartView(mChart); // For bounds control
         mChart.setMarker(mv); // Set the marker to the chart
-
-        return view;
     }
 
 
@@ -393,7 +425,7 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
             mChart.getData().notifyDataChanged();
             mChart.notifyDataSetChanged();
         } else {
-            set1 = new BarDataSet(yVals1, "The year 2017");
+            set1 = new BarDataSet(yVals1, "2017 год");
 
             set1.setDrawIcons(false);
 

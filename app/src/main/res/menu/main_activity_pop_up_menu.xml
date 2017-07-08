@@ -1,15 +1,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:id="@+id/one"
-        android:title="One"/>
+        android:id="@+id/reserv"
+        android:title="Забронировать" />
+
+    <item android:title="Инфо" />
 
     <item
-        android:id="@+id/two"
-        android:title="Two"/>
-
-    <item
-        android:id="@+id/three"
-        android:title="Three"/>
+        android:id="@+id/cancel"
+        android:title="Отменить бронь" />
 
 </menu>

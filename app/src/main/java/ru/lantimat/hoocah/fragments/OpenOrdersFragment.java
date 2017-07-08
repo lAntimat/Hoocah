@@ -15,6 +15,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -139,7 +140,9 @@ public class OpenOrdersFragment extends Fragment {
 
     private void activeItemListener() {
         mDatabaseActiveItemReference = FirebaseDatabase.getInstance().getReference(Constants.ACTIVE_ITEM);
-        mDatabaseActiveItemReference.addValueEventListener(new ValueEventListener() {
+        Query myOrdersTimeQuery = null;
+        myOrdersTimeQuery = mDatabaseActiveItemReference.orderByChild("unixTime");
+        myOrdersTimeQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Log.d("Ope", "Child count" + String.valueOf(dataSnapshot.getChildrenCount()));

@@ -1,5 +1,7 @@
 package ru.lantimat.hoocah.models;
 
+import android.app.Activity;
+
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.util.ArrayList;
@@ -12,8 +14,11 @@ public class ActiveOrder {
 
     private String id;
     private String comment;
+    private String clientName;
     private long unixTime;
     private boolean active;
+    private boolean reservation;
+    private long reservationTime;
     private float totalPrice;
     private ArrayList<ActiveItemModel> arActiveItemModel;
 
@@ -23,6 +28,13 @@ public class ActiveOrder {
         this.active = active;
         this.totalPrice = totalPrice;
         this.arActiveItemModel = arrayList;
+    }
+
+    public ActiveOrder(String id, String clientName, boolean reservation, long reservationTime) {
+        this.id = id;
+        this.clientName = clientName;
+        this.reservation = reservation;
+        this.reservationTime = reservationTime;
     }
 
     public ActiveOrder() {
@@ -62,6 +74,30 @@ public class ActiveOrder {
 
     public float getTotalPrice() {
         return totalPrice;
+    }
+
+    public String getClientName() {
+        return clientName;
+    }
+
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
+    }
+
+    public boolean isReservation() {
+        return reservation;
+    }
+
+    public void setReservation(boolean reservation) {
+        this.reservation = reservation;
+    }
+
+    public long getReservationTime() {
+        return reservationTime;
+    }
+
+    public void setReservationTime(long reservationTime) {
+        this.reservationTime = reservationTime;
     }
 
     public void setTotalPrice(float totalPrice) {

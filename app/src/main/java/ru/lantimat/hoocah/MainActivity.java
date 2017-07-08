@@ -1,20 +1,28 @@
 package ru.lantimat.hoocah;
 
+import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -38,11 +46,17 @@ import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 import com.squareup.picasso.Picasso;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import ru.lantimat.hoocah.Utils.Constants;
 import ru.lantimat.hoocah.auth.LoginActivity;
 import ru.lantimat.hoocah.fragments.OpenOrdersFragment;
+import ru.lantimat.hoocah.models.ActiveOrder;
+import ru.lantimat.hoocah.models.GoodsModel;
 import ru.lantimat.hoocah.models.TableModel;
 
 public class MainActivity extends AppCompatActivity {
@@ -56,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
     AccountHeader headerResult;
     FirebaseUser user;
     Context context;
+    Calendar dateAndTime = Calendar.getInstance();
+    DateTime dateTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,12 +134,12 @@ public class MainActivity extends AppCompatActivity {
         btn1.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                showPopUpMenu(btn1);
+                showPopUpMenu(btn1, "1");
                 return true;
             }
         });
 
-        Button btn2 = (Button) findViewById(R.id.button2);
+        final Button btn2 = (Button) findViewById(R.id.button2);
         btn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -133,7 +149,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button btn3 = (Button) findViewById(R.id.button3);
+        btn2.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showPopUpMenu(btn2, "2");
+                return true;
+            }
+        });
+
+        final Button btn3 = (Button) findViewById(R.id.button3);
         btn3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -142,6 +166,15 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent1);
             }
         });
+
+        btn3.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showPopUpMenu(btn3, "3");
+                return true;
+            }
+        });
+
         Button btn4 = (Button) findViewById(R.id.button4);
 
         btn4.setOnClickListener(new View.OnClickListener() {
@@ -237,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
         PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName("Столики");
         PrimaryDrawerItem item2 = new PrimaryDrawerItem().withIdentifier(1).withName("История");
         PrimaryDrawerItem item3 = new PrimaryDrawerItem().withIdentifier(1).withName("Редактировать");
-        PrimaryDrawerItem item4 = new PrimaryDrawerItem().withIdentifier(1).withName("Тест");
+        PrimaryDrawerItem item4 = new PrimaryDrawerItem().withIdentifier(1).withName("Статистика");
 //        SecondaryDrawerItem item2 = new SecondaryDrawerItem().withIdentifier(2).withName(R.string.drawer_item_settings);
 
 //create the drawer and remember the `Drawer` result object
@@ -355,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void showPopUpMenu(Button button) {
+    public void showPopUpMenu(Button button, final String id) {
         //Creating the instance of PopupMenu
         PopupMenu popup = new PopupMenu(MainActivity.this, button);
         //Inflating the Popup using xml file
@@ -365,16 +398,94 @@ public class MainActivity extends AppCompatActivity {
         //registering popup with OnMenuItemClickListener
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
-                Toast.makeText(
+                switch (item.getItemId()) {
+                    case R.id.reserv:
+                        showAddReservationDialog(id);
+                        break;
+                    case R.id.cancel:
+                        databaseReference.child(Constants.TABLES).child(id).child("reservation").setValue(false);
+                        databaseReference.child(Constants.ACTIVE_ITEM).child(id).removeValue();
+                        break;
+                }
+                /*Toast.makeText(
                         MainActivity.this,
                         "You Clicked : " + item.getTitle(),
                         Toast.LENGTH_SHORT
-                ).show();
+                ).show();*/
+
                 return true;
             }
         });
 
         popup.show(); //showing popup menu
+    }
+
+    public void showAddReservationDialog(final String id) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.dialog_add_reservation, null);
+        dialogBuilder.setView(dialogView);
+        final int[] myHour = {10};
+        final int[] myMinute = {10};
+
+        final EditText edName = (EditText) dialogView.findViewById(R.id.edName);
+        final EditText edTime = (EditText) dialogView.findViewById(R.id.edTime);
+
+        edTime.setFocusable(false);
+        edTime.setClickable(true);
+
+        // установка обработчика выбора времени
+        final TimePickerDialog.OnTimeSetListener t = new TimePickerDialog.OnTimeSetListener() {
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                dateAndTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                dateAndTime.set(Calendar.MINUTE, minute);
+                dateTime = DateTime.now()
+                .withHourOfDay(hourOfDay)
+                .withMinuteOfHour(minute);
+                edTime.setText(dateTime.toString(DateTimeFormat.shortTime()));
+            }
+        };
+
+        edTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setTime(t);
+            }
+        });
+
+
+        dialogBuilder.setPositiveButton("Добавить", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                if(TextUtils.isEmpty(edName.getText())) {
+                    Toast.makeText(MainActivity.this, "Введите имя", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(TextUtils.isEmpty(edTime.getText())) {
+                    Toast.makeText(MainActivity.this, "Введите url", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                databaseReference.child(Constants.TABLES).child(id).child("reservation").setValue(true);
+                databaseReference.child(Constants.TABLES).child(id).child("reservationTime").setValue(dateTime.getMillis()/1000);
+                databaseReference.child(Constants.ACTIVE_ITEM).child(id).setValue(new ActiveOrder(id, edName.getText().toString() , true, dateTime.getMillis()/1000));
+
+            }
+        });
+        dialogBuilder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //pass
+            }
+        });
+        AlertDialog b = dialogBuilder.create();
+        b.show();
+    }
+
+    // отображаем диалоговое окно для выбора времени
+    public void setTime(TimePickerDialog.OnTimeSetListener t) {
+        new TimePickerDialog(MainActivity.this, t,
+                dateAndTime.get(Calendar.HOUR_OF_DAY),
+                dateAndTime.get(Calendar.MINUTE), true)
+                .show();
     }
 
     public void tablesReferenceListener() {

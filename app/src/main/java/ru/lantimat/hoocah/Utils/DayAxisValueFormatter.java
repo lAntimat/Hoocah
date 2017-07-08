@@ -38,29 +38,29 @@ public class DayAxisValueFormatter implements IAxisValueFormatter
 
             int dayOfMonth = determineDayOfMonth(days, month + 12 * (year - 2016));
 
-            String appendix = "th";
+            String appendix = "";
 
             switch (dayOfMonth) {
                 case 1:
-                    appendix = "st";
+                    appendix = "";
                     break;
                 case 2:
-                    appendix = "nd";
+                    appendix = "";
                     break;
                 case 3:
-                    appendix = "rd";
+                    appendix = "";
                     break;
                 case 21:
-                    appendix = "st";
+                    appendix = "";
                     break;
                 case 22:
-                    appendix = "nd";
+                    appendix = "";
                     break;
                 case 23:
-                    appendix = "rd";
+                    appendix = "";
                     break;
                 case 31:
-                    appendix = "st";
+                    appendix = "";
                     break;
             }
 
