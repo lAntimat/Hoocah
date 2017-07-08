@@ -1,6 +1,7 @@
 package ru.lantimat.hoocah;
 
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Logger;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
@@ -14,6 +15,8 @@ public class FireBaseApp extends android.app.Application {
         public void onCreate() {
             super.onCreate();
     /* Enable disk persistence  */
+            FirebaseDatabase.getInstance().setLogLevel(Logger.Level.valueOf("DEBUG"));
+
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
             JodaTimeAndroid.init(this);
         }

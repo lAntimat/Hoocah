@@ -45,6 +45,7 @@ import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.materialize.color.Material;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 
 import java.text.ParseException;
@@ -69,8 +70,9 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String TAG = "StatisticFragment";
-    private static int HOURS_BEFORE_ZERO = 7*60*60; //00:00 - 7:00 = 17:00
-    private static int HOURS_AFTER_ZERO = 5*60*60; //00:00 + 5:00 = 05:00
+    private static int HOURS_BEFORE_ZERO = 0*60*60; //00:00 - 7:00 = 17:00
+    private static int HOURS_AFTER_ZERO = 0*60*60; //00:00 - 31:00 = 17:00
+    private static int HOURS = 17; //00:00 - 31:00 = 17:00
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -143,25 +145,23 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
     private void getProfit() {
 
         progressBar.setVisibility(View.VISIBLE);
-        DateTime now = DateTime.now();
         DateTime lastWeek = new DateTime();
         DateTime dateTime = new DateTime();
         String date;
         date = lastWeek.getYear() + "-" + lastWeek.getMonthOfYear() + "-" + lastWeek.getDayOfMonth();
         Log.d(TAG, "date" + date);
 
-
-        Query myTopPostsQuery = null;
         try {
-            if(dateTime.getHourOfDay()>17) {
-                myTopPostsQuery = mDatabaseReference.child(Constants.CLOSE_ORDER)
-                        .orderByChild("unixTimeClose").startAt(getStartOfDayInMillis(date) - HOURS_BEFORE_ZERO);
-            } else
-            myTopPostsQuery = mDatabaseReference.child(Constants.CLOSE_ORDER)
-                        .orderByChild("unixTimeClose").startAt(getStartOfDayInMillis(date) - HOURS_AFTER_ZERO);
+            if (dateTime.getHourOfDay() > 17) {
+                workStartTime = getStartOfDayInMillis(date) + HOURS_BEFORE_ZERO;
+            } else workStartTime = getStartOfDayInMillis(date) - HOURS_AFTER_ZERO;
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
+        Query myTopPostsQuery = null;
+        myTopPostsQuery = mDatabaseReference.child(Constants.CLOSE_ORDER)
+                        .orderByChild("unixTimeClose").startAt(workStartTime).endAt(workStartTime + oneDayUnixTime);
 
         profitDay = 0;
         myTopPostsQuery.addValueEventListener(new ValueEventListener() {
@@ -194,7 +194,10 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         date = lastWeek.getYear() + "-" + lastWeek.getMonthOfYear() + "-" + lastWeek.getDayOfMonth();
         Log.d(TAG, "date" + date);
         try {
-            workStartTime = getStartOfDayInMillis(date) + HOURS_AFTER_ZERO;
+            if(dateTime.getHourOfDay()>17) {
+                workStartTime = getStartOfDayInMillis(date) + HOURS_BEFORE_ZERO;
+            }  else workStartTime = getStartOfDayInMillis(date) - HOURS_AFTER_ZERO;
+
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -211,13 +214,13 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
-                    profitWeek+= postSnapshot.getValue(CloseOrder.class).getTotalPrice();
+                    profitWeek += postSnapshot.getValue(CloseOrder.class).getTotalPrice();
                     arCloseOrder.add(postSnapshot.getValue(CloseOrder.class));
                     //Log.d(TAG, "Время закрытия" + closeTime);
                 }
                 tvWeek.setText(str + " " + profitWeek);
 
-                for(int i = 0; i <= dayCount; i++) {
+                for(int i = 0; i < dayCount; i++) {
                     arProfit.add((float) getPriceForDayFromArray(arCloseOrder, timeToCompare, timeToCompare+oneDayUnixTime));
                     timeToCompare += oneDayUnixTime;
                 }
@@ -233,8 +236,6 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
             }
         });
     }
-
-
     private void getProfitForPeriod(final DateTime firstDayDate, final DateTime lastDayDate) {
 
         progressBar.setVisibility(View.VISIBLE);
@@ -247,7 +248,9 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         date = firstDayDate.getYear() + "-" + firstDayDate.getMonthOfYear() + "-" + firstDayDate.getDayOfMonth();
 
         try {
-            workStartTime = getStartOfDayInMillis(date) + HOURS_AFTER_ZERO;
+            if(firstDayDate.getHourOfDay()>17) {
+                workStartTime = getStartOfDayInMillis(date) + HOURS_BEFORE_ZERO;
+            }  else workStartTime = getStartOfDayInMillis(date) - HOURS_AFTER_ZERO;
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -271,7 +274,60 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
                 tvWeek.setText("Выручка за период с " + firstDayDate.toString(DateTimeFormat.longDate())
                         + " по " + lastDayDate.toString(DateTimeFormat.longDate()) + "\n" + profitWeek + " рублей");
 
-                for(int i = 0; i <= dayCount; i++) {
+                for(int i = 0; i < dayCount; i++) {
+                    arProfit.add((float) getPriceForDayFromArray(arCloseOrder, timeToCompare, timeToCompare+oneDayUnixTime));
+                    timeToCompare += oneDayUnixTime;
+                }
+                setData(arProfit, firstDayDate.getDayOfYear()-1);
+                //Log.d(TAG, "День от начала года " + (now.getDayOfYear()-dayCount));
+                progressBar.setVisibility(View.INVISIBLE);
+                mChart.invalidate();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+    private void getProfitForFixedPeriod(final DateTime firstDayDate, final DateTime lastDayDate, final String str) {
+
+        progressBar.setVisibility(View.VISIBLE);
+        arCloseOrder.clear();
+        arProfit.clear();
+        final int dayCount = lastDayDate.getDayOfYear() - firstDayDate.getDayOfYear();
+
+
+        String date;
+        date = firstDayDate.getYear() + "-" + firstDayDate.getMonthOfYear() + "-" + firstDayDate.getDayOfMonth();
+
+        try {
+            if(firstDayDate.getHourOfDay()>17) {
+                workStartTime = getStartOfDayInMillis(date) + HOURS_BEFORE_ZERO;
+            }  else workStartTime = getStartOfDayInMillis(date) - HOURS_AFTER_ZERO;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Query myTopPostsQuery = null;
+        myTopPostsQuery = mDatabaseReference.child(Constants.CLOSE_ORDER)
+                .orderByChild("unixTimeClose").startAt(workStartTime).endAt(workStartTime + oneDayUnixTime*dayCount);
+
+        profitWeek = 0;
+        sumForDay = 0;
+        timeToCompare = workStartTime;
+
+        myTopPostsQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                    profitWeek+= postSnapshot.getValue(CloseOrder.class).getTotalPrice();
+                    arCloseOrder.add(postSnapshot.getValue(CloseOrder.class));
+                    //Log.d(TAG, "Время закрытия" + closeTime);
+                }
+                tvWeek.setText(str + " " + profitWeek + " рублей");
+
+                for(int i = 0; i < dayCount; i++) {
                     arProfit.add((float) getPriceForDayFromArray(arCloseOrder, timeToCompare, timeToCompare+oneDayUnixTime));
                     timeToCompare += oneDayUnixTime;
                 }
@@ -332,8 +388,8 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
 
         initChart(view);
         getProfit();
-        DateTime now = DateTime.now();
-        getProfitWeek(now.getDayOfWeek(), "Выручка за неделю");
+        DateTime date = DateTime.now();
+        getProfitForFixedPeriod(date.minusDays(date.getDayOfWeek()-1), date.plusDays(1), "Выручка за неделю");
 
         return view;
     }
@@ -560,13 +616,15 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         Log.d(TAG, "Menu_click");
         //noinspection SimplifiableIfStatement
         if (id == R.id.statistik_for_week) {
-            DateTime now = DateTime.now();
-            getProfitWeek(now.getDayOfWeek(), "Выручка за неделю");
+            DateTime date= DateTime.now();
+            getProfitForFixedPeriod(date.minusDays(date.getDayOfWeek()-1), date.plusDays(1), "Выручка за неделю");
+            //getProfitWeek(now.getDayOfWeek(), "Выручка за неделю");
             return true;
         }
         if (id == R.id.statistik_for_month) {
-            DateTime now = DateTime.now();
-            getProfitWeek(now.getDayOfMonth(), "Выручка за месяц");
+            DateTime date= DateTime.now();
+            getProfitForFixedPeriod(date.minusDays(date.getDayOfMonth()-1), date.plusDays(1), "Выручка за месяц");
+            //getProfitWeek(now.getDayOfMonth(), "Выручка за месяц");
             return true;
         }
         if (id == R.id.statistik_for_period) {

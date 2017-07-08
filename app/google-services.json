@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "241361755047-0vpdjt5dujtd308f0nraa1g4ukipjgea.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ru.lantimat.hoocah",
+            "certificate_hash": "2a374fbdcd8a05ccb837cafccd5a8b58e0be3f9d"
+          }
+        },
+        {
           "client_id": "241361755047-acso1rd9kjusjdlfs50o4nj2sasplciv.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "241361755047-acso1rd9kjusjdlfs50o4nj2sasplciv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

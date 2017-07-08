@@ -17,8 +17,6 @@ public class ActiveOrder {
     private String clientName;
     private long unixTime;
     private boolean active;
-    private boolean reservation;
-    private long reservationTime;
     private float totalPrice;
     private ArrayList<ActiveItemModel> arActiveItemModel;
 
@@ -28,13 +26,6 @@ public class ActiveOrder {
         this.active = active;
         this.totalPrice = totalPrice;
         this.arActiveItemModel = arrayList;
-    }
-
-    public ActiveOrder(String id, String clientName, boolean reservation, long reservationTime) {
-        this.id = id;
-        this.clientName = clientName;
-        this.reservation = reservation;
-        this.reservationTime = reservationTime;
     }
 
     public ActiveOrder() {
@@ -82,22 +73,6 @@ public class ActiveOrder {
 
     public void setClientName(String clientName) {
         this.clientName = clientName;
-    }
-
-    public boolean isReservation() {
-        return reservation;
-    }
-
-    public void setReservation(boolean reservation) {
-        this.reservation = reservation;
-    }
-
-    public long getReservationTime() {
-        return reservationTime;
-    }
-
-    public void setReservationTime(long reservationTime) {
-        this.reservationTime = reservationTime;
     }
 
     public void setTotalPrice(float totalPrice) {

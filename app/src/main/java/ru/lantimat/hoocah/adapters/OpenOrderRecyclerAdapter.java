@@ -54,7 +54,7 @@ public class OpenOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
 
-        if (mList.get(position).isReservation()) {
+        /*if (mList.get(position).isReservation()) {
             ((ItemViewHolder) holder).mItems.setVisibility(View.GONE);
             ((ItemViewHolder) holder).mComment.setVisibility(View.GONE);
             ((ItemViewHolder) holder).mTotalPrice.setVisibility(View.GONE);
@@ -68,10 +68,7 @@ public class OpenOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
 
             ((ItemViewHolder) holder).mStatus.setText("Забронирован на " + mList.get(position).getClientName() + "\n" +
                     convertUnixTimeToDateForReservation(unixBillReservTime));
-            ((ItemViewHolder) holder).mStatus.setTextColor(R.color.yellow_800);
-
-
-        } else {
+            ((ItemViewHolder) holder).mStatus.setTextColor(R.color.yellow_800);*/
 
             ((ItemViewHolder) holder).mItems.setVisibility(View.VISIBLE);
             ((ItemViewHolder) holder).mComment.setVisibility(View.VISIBLE);
@@ -110,7 +107,6 @@ public class OpenOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
             }
 
         }
-    }
 
     private String convertUnixTimeToDate(long unixTime) {
         Date date = new Date(unixTime*1000L); // *1000 is to convert seconds to milliseconds

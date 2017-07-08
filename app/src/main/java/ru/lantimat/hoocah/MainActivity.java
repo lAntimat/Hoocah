@@ -7,13 +7,20 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Debug;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,12 +33,17 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Logger;
 import com.google.firebase.database.ValueEventListener;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -53,16 +65,19 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import ru.lantimat.hoocah.Utils.Constants;
+import ru.lantimat.hoocah.adapters.ReservationRecyclerAdapter;
 import ru.lantimat.hoocah.auth.LoginActivity;
 import ru.lantimat.hoocah.fragments.OpenOrdersFragment;
 import ru.lantimat.hoocah.models.ActiveOrder;
 import ru.lantimat.hoocah.models.GoodsModel;
+import ru.lantimat.hoocah.models.ReservatonModel;
 import ru.lantimat.hoocah.models.TableModel;
 
 public class MainActivity extends AppCompatActivity {
 
     final static String TAG = "MainActivity";
     ArrayList<TableModel> arTables = new ArrayList<>();
+    ArrayList<ReservatonModel> arReserv = new ArrayList<>();
     ArrayList<Button> arButtons = new ArrayList<>();
     DatabaseReference databaseReference;
     Toolbar toolbar;
@@ -72,6 +87,9 @@ public class MainActivity extends AppCompatActivity {
     Context context;
     Calendar dateAndTime = Calendar.getInstance();
     DateTime dateTime;
+    RecyclerView recyclerView;
+    ReservationRecyclerAdapter reservationRecyclerAdapter;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,11 +98,17 @@ public class MainActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         context = getApplicationContext();
         setSupportActionBar(toolbar);
+        mAuth = FirebaseAuth.getInstance();
         authCheck();
         initDrawer();
         databaseReference = FirebaseDatabase.getInstance().getReference();
         databaseReference.keepSynced(true);
 
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        reservationRecyclerAdapter = new ReservationRecyclerAdapter(arReserv);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(reservationRecyclerAdapter);
 
         //initialize and create the image loader logic
         DrawerImageLoader.init(new AbstractDrawerImageLoader() {
@@ -107,6 +131,24 @@ public class MainActivity extends AppCompatActivity {
 
         }*/
 
+        DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+        connectedRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                boolean connected = snapshot.getValue(Boolean.class);
+                if (connected) {
+                    System.out.println("connected");
+                } else {
+                    System.out.println("not connected");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                System.err.println("Listener was cancelled");
+            }
+        });
+
         Fragment fragment;
 
         fragment = OpenOrdersFragment.newInstance("");
@@ -118,6 +160,20 @@ public class MainActivity extends AppCompatActivity {
         setupButtons();
 
         tablesReferenceListener();
+
+    }
+
+    @Override
+    protected void onStart() {
+        //FirebaseDatabase.getInstance().goOnline();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        //FirebaseDatabase.getInstance().goOffline();
+        super.onStop();
     }
 
     private void setupButtons() {
@@ -331,7 +387,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });*/
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = mAuth.getInstance().getCurrentUser();
         if (user != null) {
 
             ProfileDrawerItem profile = new ProfileDrawerItem().withEmail(user.getEmail());
@@ -404,7 +460,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.cancel:
                         databaseReference.child(Constants.TABLES).child(id).child("reservation").setValue(false);
-                        databaseReference.child(Constants.ACTIVE_ITEM).child(id).removeValue();
+                        databaseReference.child(Constants.RESERVATION).child(id).removeValue();
                         break;
                 }
                 /*Toast.makeText(
@@ -467,7 +523,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 databaseReference.child(Constants.TABLES).child(id).child("reservation").setValue(true);
                 databaseReference.child(Constants.TABLES).child(id).child("reservationTime").setValue(dateTime.getMillis()/1000);
-                databaseReference.child(Constants.ACTIVE_ITEM).child(id).setValue(new ActiveOrder(id, edName.getText().toString() , true, dateTime.getMillis()/1000));
+                databaseReference.child(Constants.RESERVATION).child(id).setValue(new ReservatonModel(id, true, edName.getText().toString(), dateTime.getMillis()/1000));
 
             }
         });
@@ -493,9 +549,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 arTables.clear();
+                arReserv.clear();
                 for (DataSnapshot postSnapshot: dataSnapshot.child(Constants.TABLES).getChildren()) {
                     arTables.add(postSnapshot.getValue(TableModel.class));
                 }
+                for (DataSnapshot postSnapshot: dataSnapshot.child(Constants.RESERVATION).getChildren()) {
+                    arReserv.add(postSnapshot.getValue(ReservatonModel.class));
+                }
+                reservationRecyclerAdapter.notifyDataSetChanged();
                 tablesUpdate(arButtons, arTables);
             }
 
@@ -517,6 +578,8 @@ public class MainActivity extends AppCompatActivity {
         }
         }
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
