@@ -432,7 +432,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
         level = 0;
         goodsRecyclerAdapter = new GoodsRecyclerAdapter(arGoods);
         //recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),3));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(goodsRecyclerAdapter);
 
@@ -501,7 +501,7 @@ public class AddGoodsFragment extends Fragment implements OnBackPressedListener 
             }
         });
         //recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),3));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(itemsRecyclerAdapter);
 

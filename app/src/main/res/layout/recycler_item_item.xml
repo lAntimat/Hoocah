@@ -78,15 +78,15 @@
         <com.mikepenz.iconics.view.IconicsButton
             android:id="@+id/tvDots"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="40dp"
+            android:layout_height="45dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignTop="@+id/imageView"
             android:layout_weight="1"
             android:text="{gmd_more_vert}"
-            android:textColor="@android:color/white"
-            android:textSize="24sp" />
+            android:textSize="22sp" />
+        <!--android:textColor="@android:color/black"-->
 
     </RelativeLayout>
 

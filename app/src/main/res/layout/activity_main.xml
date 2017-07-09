@@ -31,7 +31,7 @@
                     android:layout_margin="@dimen/button_margin"
                     android:layout_weight="1"
                     android:background="@drawable/button_green"
-                    android:text="Button6"
+                    android:text="Столик 6"
                     app:layout_constraintLeft_toLeftOf="parent"
                     tools:layout_editor_absoluteY="122dp" />
 
@@ -42,7 +42,7 @@
                     android:layout_margin="@dimen/button_margin"
                     android:layout_weight="1"
                     android:background="@drawable/button_green"
-                    android:text="Button7"
+                    android:text="Столик 7"
                     app:layout_constraintLeft_toRightOf="@+id/button6"
                     tools:layout_editor_absoluteY="124dp" />
 
@@ -53,7 +53,7 @@
                     android:layout_margin="@dimen/button_margin"
                     android:layout_weight="1"
                     android:background="@drawable/button_green"
-                    android:text="Button8"
+                    android:text="Столик 8"
                     app:layout_constraintLeft_toRightOf="@+id/button7"
                     tools:layout_editor_absoluteY="124dp" />
 
@@ -64,7 +64,7 @@
                     android:layout_margin="@dimen/button_margin"
                     android:layout_weight="1"
                     android:background="@drawable/button_green"
-                    android:text="Button9"
+                    android:text="Столик 9"
                     app:layout_constraintLeft_toRightOf="@+id/button8"
                     tools:layout_editor_absoluteY="124dp" />
 
@@ -75,7 +75,8 @@
                     android:layout_margin="@dimen/button_margin"
                     android:layout_weight="1"
                     android:background="@drawable/button_green"
-                    android:text="Button10"
+                    android:text="Столик 10"
+                    android:visibility="invisible"
                     app:layout_constraintLeft_toRightOf="@+id/btnComment"
                     tools:layout_editor_absoluteY="124dp" />
             </LinearLayout>
@@ -93,7 +94,7 @@
                     android:layout_margin="@dimen/button_margin"
                     android:layout_weight="1"
                     android:background="@drawable/button_green"
-                    android:text="Button1"
+                    android:text="Столик 1"
                     tools:layout_editor_absoluteX="18dp"
                     tools:layout_editor_absoluteY="279dp" />
 
@@ -104,7 +105,7 @@
                     android:layout_margin="@dimen/button_margin"
                     android:layout_weight="1"
                     android:background="@drawable/button_green"
-                    android:text="Button2"
+                    android:text="Столик 2"
                     app:layout_constraintLeft_toRightOf="@+id/button"
                     tools:layout_editor_absoluteY="278dp" />
 
@@ -115,7 +116,7 @@
                     android:layout_margin="@dimen/button_margin"
                     android:layout_weight="1"
                     android:background="@drawable/button_green"
-                    android:text="Button3"
+                    android:text="Столик 3"
                     app:layout_constraintLeft_toRightOf="@+id/button2"
                     tools:layout_editor_absoluteY="278dp" />
 
@@ -126,7 +127,7 @@
                     android:layout_margin="@dimen/button_margin"
                     android:layout_weight="1"
                     android:background="@drawable/button_green"
-                    android:text="Button4"
+                    android:text="Столик 4"
                     app:layout_constraintLeft_toRightOf="@+id/button3"
                     tools:layout_editor_absoluteY="278dp" />
 
@@ -137,7 +138,7 @@
                     android:layout_margin="@dimen/button_margin"
                     android:layout_weight="1"
                     android:background="@drawable/button_green"
-                    android:text="Button5"
+                    android:text="Столик 5"
                     app:layout_constraintLeft_toRightOf="@+id/button4"
                     tools:layout_editor_absoluteY="278dp" />
             </LinearLayout>

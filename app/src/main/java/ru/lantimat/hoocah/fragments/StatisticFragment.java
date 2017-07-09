@@ -101,7 +101,7 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
     ArrayList<Float> arProfit = new ArrayList<>();
     ArrayList<CloseOrder> arCloseOrder = new ArrayList<>();
 
-    Calendar dateAndTime=Calendar.getInstance();
+    Calendar dateAndTime = Calendar.getInstance();
     DateTime now = DateTime.now();
 
     long workStartTime;
@@ -506,7 +506,7 @@ public class StatisticFragment extends Fragment implements OnBackPressedListener
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(format.parse(date));
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.HOUR_OF_DAY, 5);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);

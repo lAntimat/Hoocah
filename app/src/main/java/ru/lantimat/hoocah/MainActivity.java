@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         context = getApplicationContext();
         setSupportActionBar(toolbar);
         mAuth = FirebaseAuth.getInstance();
-        authCheck();
+        //authCheck();
         initDrawer();
         databaseReference = FirebaseDatabase.getInstance().getReference();
         databaseReference.keepSynced(true);
@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button btn4 = (Button) findViewById(R.id.button4);
+        final Button btn4 = (Button) findViewById(R.id.button4);
 
         btn4.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -242,7 +242,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button btn5 = (Button) findViewById(R.id.button5);
+        btn4.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showPopUpMenu(btn4, "4");
+                return true;
+            }
+        });
+
+        final Button btn5 = (Button) findViewById(R.id.button5);
 
         btn5.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -253,7 +261,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button btn6 = (Button) findViewById(R.id.button6);
+        btn5.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showPopUpMenu(btn5, "5");
+                return true;
+            }
+        });
+
+        final Button btn6 = (Button) findViewById(R.id.button6);
 
         btn6.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -264,7 +280,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button btn7 = (Button) findViewById(R.id.button7);
+        btn6.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showPopUpMenu(btn6, "6");
+                return true;
+            }
+        });
+
+        final Button btn7 = (Button) findViewById(R.id.button7);
 
         btn7.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -275,7 +299,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button btn8 = (Button) findViewById(R.id.button8);
+        btn7.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showPopUpMenu(btn7, "7");
+                return true;
+            }
+        });
+
+        final Button btn8 = (Button) findViewById(R.id.button8);
 
         btn8.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -286,7 +318,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button btn9 = (Button) findViewById(R.id.btnComment);
+        btn8.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showPopUpMenu(btn8, "8");
+                return true;
+            }
+        });
+
+        final Button btn9 = (Button) findViewById(R.id.btnComment);
 
         btn9.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -297,7 +337,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button btn10 = (Button) findViewById(R.id.button10);
+        btn9.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showPopUpMenu(btn9, "9");
+                return true;
+            }
+        });
+
+        final Button btn10 = (Button) findViewById(R.id.button10);
 
         btn10.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -308,6 +356,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        btn10.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showPopUpMenu(btn10, "10");
+                return true;
+            }
+        });
 
         arButtons.add(btn1);
         arButtons.add(btn2);
@@ -322,6 +378,46 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initDrawer() {
+
+        headerResult = new AccountHeaderBuilder()
+                .withActivity(this)
+                .withHeaderBackground(R.drawable.cactus)
+                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
+                    @Override
+                    public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
+                        return false;
+                    }
+                })
+                .withOnAccountHeaderItemLongClickListener(new AccountHeader.OnAccountHeaderItemLongClickListener() {
+                    @Override
+                    public boolean onProfileLongClick(View view, IProfile profile, boolean current) {
+                        new MaterialDialog.Builder(MainActivity.this)
+                                .items(R.array.dialog_account_items)
+                                .positiveText("Закрыть")
+                                .itemsCallback(new MaterialDialog.ListCallback() {
+                                    @Override
+                                    public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+                                        switch (position){
+                                            case 0:
+                                                Intent intent = new Intent(MainActivity.this, UpdateProfileActivity.class);
+                                                startActivity(intent);
+                                                break;
+                                            case 1:
+                                                FirebaseAuth.getInstance().signOut();
+                                                break;
+                                        }
+                                    }
+                                })
+                                .show();
+                        return true;
+                    }
+                })
+                .build();
+
+
+
+
+
         //if you want to update the items at a later time it is recommended to keep it in a variable
         PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName("Столики");
         PrimaryDrawerItem item2 = new PrimaryDrawerItem().withIdentifier(1).withName("История");
@@ -456,7 +552,14 @@ public class MainActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.reserv:
-                        showAddReservationDialog(id);
+                        boolean isReserv = false;
+                        for(int i = 0; i < arReserv.size(); i++) {
+                            if(arReserv.get(i).getTableId().equals(id)) {
+                                Toast.makeText(getApplicationContext(), "Столик уже забронирован", Toast.LENGTH_SHORT).show();
+                                isReserv = true;
+                            }
+                        }
+                        if(!isReserv) showAddReservationDialog(id);
                         break;
                     case R.id.cancel:
                         databaseReference.child(Constants.TABLES).child(id).child("reservation").setValue(false);
@@ -574,7 +677,7 @@ public class MainActivity extends AppCompatActivity {
             TableModel tableModel = arTables.get(i);
             if (tableModel.isFree()) button.setBackgroundResource(R.drawable.button_click_green);
             else if(!tableModel.isFree()) button.setBackgroundResource(R.drawable.button_red);
-            if (tableModel.isReservation()) button.setBackgroundResource(R.drawable.button_yellow);
+            //if (tableModel.isReservation()) button.setBackgroundResource(R.drawable.button_yellow);
         }
         }
     }
