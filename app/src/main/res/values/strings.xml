@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Hoocah</string>
+    <string name="app_name">Кактус POS</string>
     <string name="action_settings">Settings</string>
     <string name="menu_statistik_for_week">Выручка за неделю</string>
     <string name="menu_statistik_for_month">Выручка за месяц</string>
@@ -58,6 +58,8 @@
     <string name="title_order_active">Активный</string>
     <string name="title_order_inactive">Ожидает оплаты</string>
     <string name="title_order_reserv">Забронировано</string>
+    <string name="toolbar_subtitle_online">Вы в режиме online</string>
+    <string name="toolbar_subtitle_offline">Offline</string>
 
     <string name="dialogs.open_orders"> </string>
 

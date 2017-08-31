@@ -138,8 +138,10 @@ public class MainActivity extends AppCompatActivity {
                 boolean connected = snapshot.getValue(Boolean.class);
                 if (connected) {
                     System.out.println("connected");
+                    toolbar.setSubtitle(R.string.toolbar_subtitle_online);
                 } else {
                     System.out.println("not connected");
+                    toolbar.setSubtitle(R.string.toolbar_subtitle_offline);
                 }
             }
 
